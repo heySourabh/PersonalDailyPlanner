@@ -16,21 +16,25 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class Section extends VBox {
-    final Font sectionTitleFont;
+    final static Font sectionTitleFont = Font.loadFont(Section.class
+            .getResource("fonts/Cinzel-Bold.ttf").toString(), 28);
+    final static Font notesFont = Font.loadFont(Section.class
+            .getResource("fonts/Montserrat-Regular.ttf").toString(), 12);
+    final static Font labelFont = Font.loadFont(Section.class
+            .getResource("fonts/Montserrat-SemiBold.ttf").toString(), 16);
 
     public Section(String title, Pane content) {
-        sectionTitleFont = Font.loadFont(getClass()
-                .getResource("fonts/Cinzel-Bold.ttf").toString(), 32);
-
         Text titleText = new Text(title);
         titleText.setFont(sectionTitleFont);
         titleText.setEffect(new InnerShadow());
         titleText.setFill(Color.WHITE);
 
         getChildren().addAll(titleText, content);
-        setAlignment(Pos.CENTER);
-        setPadding(new Insets(15));
+        setAlignment(Pos.TOP_CENTER);
+        setPadding(new Insets(10));
+        setSpacing(15);
 
+        VBox.setVgrow(titleText, Priority.NEVER);
         VBox.setVgrow(content, Priority.ALWAYS);
     }
 }
