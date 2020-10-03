@@ -16,6 +16,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -43,6 +44,10 @@ public class Main extends Application {
     public void start(Stage stage) {
         Scene scene = new Scene(createContent(), 800, 800);
         stage.setScene(scene);
+        stage.getIcons().addAll(
+                new Image(Main.class.getResource("icons/icon_64.png").toString()),
+                new Image(Main.class.getResource("icons/icon_128.png").toString()));
+        stage.setTitle("Productivity Planner");
         stage.show();
     }
 
