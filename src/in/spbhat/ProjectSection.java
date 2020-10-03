@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class ProjectSection extends Section {
     final static Font projectTitleTextFont = Font.loadFont(Section.class
@@ -33,7 +34,7 @@ public class ProjectSection extends Section {
         HBox.setHgrow(project2, Priority.ALWAYS);
         HBox.setHgrow(project3, Priority.ALWAYS);
 
-        content.setSpacing(20);
+        content.setSpacing(30);
         content.setAlignment(Pos.CENTER);
 
         return content;
@@ -49,11 +50,11 @@ public class ProjectSection extends Section {
         titleField.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         HBox projectTitle = new HBox(titleLabel, titleField);
         projectTitle.setAlignment(Pos.CENTER);
+        VBox.setMargin(projectTitle, new Insets(0, 0, 15, 0));
         HBox.setHgrow(titleField, Priority.ALWAYS);
 
-        Label note = new Label("5 big things I must do \nto move this project forward:");
+        Text note = new Text("5 big things I must do \nto move this project forward:");
         note.setFont(Section.notesFont);
-        note.setPadding(new Insets(5, 5, 5, 30));
 
         VBox tasks = new VBox();
         for (int num = 1; num <= 5; num++) {
@@ -68,7 +69,7 @@ public class ProjectSection extends Section {
             task.setAlignment(Pos.CENTER);
             tasks.getChildren().add(task);
             HBox.setHgrow(taskDetail, Priority.ALWAYS);
-            VBox.setMargin(task, new Insets(5));
+            VBox.setMargin(task, new Insets(5, 0, 5, 0));
         }
 
         return new VBox(projectTitle, note, tasks);
