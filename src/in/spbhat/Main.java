@@ -55,14 +55,15 @@ public class Main extends Application {
         MenuBar menuBar = new MenuBar(fileMenu);
         menuBar.setUseSystemMenuBar(true);
 
-        VBox topPane = new VBox(menuBar, new PlannerTitlePane());
+        VBox topPane = new VBox(menuBar);
 
         root.setTop(topPane);
 
         Section projectsSection = new ProjectSection();
         Section peopleSection = new PeopleSection();
         Section prioritiesSection = new PrioritiesSection();
-        VBox sections = new VBox(new Separator(),
+        VBox sections = new VBox(
+                new PlannerTitlePane(), new Separator(),
                 projectsSection, new Separator(),
                 peopleSection, new Separator(),
                 prioritiesSection);
