@@ -5,9 +5,7 @@
 
 package in.spbhat;
 
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Separator;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -26,7 +24,6 @@ public class PlannerTitlePane extends VBox {
         title.setFill(Color.WHITE);
         title.setUnderline(true);
 
-        Separator hr = new Separator(Orientation.HORIZONTAL);
         getChildren().addAll(title);
         setAlignment(Pos.CENTER);
     }
