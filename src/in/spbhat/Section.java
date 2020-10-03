@@ -22,6 +22,8 @@ public class Section extends VBox {
             .getResource("fonts/Montserrat-Regular.ttf").toString(), 12);
     final static Font labelFont = Font.loadFont(Section.class
             .getResource("fonts/Montserrat-SemiBold.ttf").toString(), 16);
+    final static Font writeAreaFont = Font.loadFont(Section.class
+            .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
 
     public Section(String title, Pane content) {
         Text titleText = new Text(title);

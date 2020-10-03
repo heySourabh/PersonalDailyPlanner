@@ -10,12 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
 public class PrioritiesSection extends Section {
-    final static Font writeAreaFont = Font.loadFont(Section.class
-            .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
-
     public PrioritiesSection() {
         super("Priorities", createContent());
     }
@@ -31,13 +27,13 @@ public class PrioritiesSection extends Section {
         noteLabel.setTextFill(Color.GRAY);
 
         TextArea writeAreaLeft = new TextArea();
-        writeAreaLeft.setFont(writeAreaFont);
+        writeAreaLeft.setFont(Section.writeAreaFont);
         writeAreaLeft.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         HBox.setHgrow(writeAreaLeft, Priority.ALWAYS);
         VBox.setVgrow(writeAreaLeft, Priority.ALWAYS);
 
         TextArea writeAreaRight = new TextArea();
-        writeAreaRight.setFont(writeAreaFont);
+        writeAreaRight.setFont(Section.writeAreaFont);
         writeAreaRight.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         HBox.setHgrow(writeAreaRight, Priority.ALWAYS);
         VBox.setVgrow(writeAreaRight, Priority.ALWAYS);

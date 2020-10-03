@@ -18,8 +18,6 @@ import javafx.scene.text.TextAlignment;
 public class ProjectSection extends Section {
     final static Font projectTitleTextFont = Font.loadFont(Section.class
             .getResource("fonts/Kalam-Regular.ttf").toString(), 20);
-    final static Font taskDetailTextFont = Font.loadFont(Section.class
-            .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
 
     public ProjectSection() {
         super("Projects", createContent());
@@ -65,7 +63,7 @@ public class ProjectSection extends Section {
             numLabel.setFont(Section.labelFont);
             TextField taskDetail = new TextField();
             taskDetail.setPadding(new Insets(2, 5, 2, 5));
-            taskDetail.setFont(taskDetailTextFont);
+            taskDetail.setFont(Section.writeAreaFont);
             taskDetail.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 
             HBox task = new HBox(numLabel, taskDetail);

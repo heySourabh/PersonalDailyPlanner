@@ -10,12 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
 public class PeopleSection extends Section {
-    final static Font writeAreaFont = Font.loadFont(Section.class
-            .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
-
     public PeopleSection() {
         super("People", createContent());
     }
@@ -45,7 +41,7 @@ public class PeopleSection extends Section {
         noteLabel.setTextFill(Color.GRAY);
 
         TextArea writeArea = new TextArea();
-        writeArea.setFont(writeAreaFont);
+        writeArea.setFont(Section.writeAreaFont);
         writeArea.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         VBox.setVgrow(writeArea, Priority.ALWAYS);
 
