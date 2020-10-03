@@ -17,7 +17,7 @@ import javafx.scene.text.Text;
 
 public class Section extends VBox {
     final static Font sectionTitleFont = Font.loadFont(Section.class
-            .getResource("fonts/Cinzel-Bold.ttf").toString(), 28);
+            .getResource("fonts/Cinzel-Bold.ttf").toString(), 24);
     final static Font notesFont = Font.loadFont(Section.class
             .getResource("fonts/Montserrat-Regular.ttf").toString(), 12);
     final static Font labelFont = Font.loadFont(Section.class
@@ -27,12 +27,12 @@ public class Section extends VBox {
         Text titleText = new Text(title);
         titleText.setFont(sectionTitleFont);
         titleText.setEffect(new InnerShadow());
-        titleText.setFill(Color.WHITE);
+        titleText.setFill(Color.RED);
 
         getChildren().addAll(titleText, content);
         setAlignment(Pos.TOP_CENTER);
-        setPadding(new Insets(10));
-        setSpacing(15);
+        setPadding(new Insets(5));
+        setSpacing(2);
 
         VBox.setVgrow(titleText, Priority.NEVER);
         VBox.setVgrow(content, Priority.ALWAYS);

@@ -6,6 +6,7 @@
 package in.spbhat;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -45,6 +46,7 @@ public class Main extends Application {
         VBox.setVgrow(prioritiesSection, Priority.ALWAYS);
 
         sections.setAlignment(Pos.TOP_CENTER);
+        sections.setPadding(new Insets(0, 10, 10, 10));
         root.setCenter(sections);
 
         return root;

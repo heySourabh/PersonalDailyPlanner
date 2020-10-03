@@ -5,7 +5,6 @@
 
 package in.spbhat;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -43,7 +42,7 @@ public class PeopleSection extends Section {
 
         Label noteLabel = new Label(note);
         noteLabel.setFont(Section.notesFont);
-        noteLabel.setPadding(new Insets(5, 2, 2, 2));
+        noteLabel.setTextFill(Color.GRAY);
 
         TextArea writeArea = new TextArea();
         writeArea.setFont(writeAreaFont);

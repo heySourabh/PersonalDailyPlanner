@@ -13,10 +13,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class ProjectSection extends Section {
     final static Font projectTitleTextFont = Font.loadFont(Section.class
-            .getResource("fonts/TheGirlNextDoor-Regular.ttf").toString(), 16);
+            .getResource("fonts/Kalam-Regular.ttf").toString(), 20);
     final static Font taskDetailTextFont = Font.loadFont(Section.class
             .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
 
@@ -55,6 +56,8 @@ public class ProjectSection extends Section {
 
         Text note = new Text("5 big things I must do \nto move this project forward:");
         note.setFont(Section.notesFont);
+        note.setFill(Color.GRAY);
+        note.setTextAlignment(TextAlignment.LEFT);
 
         VBox tasks = new VBox();
         for (int num = 1; num <= 5; num++) {
@@ -69,9 +72,11 @@ public class ProjectSection extends Section {
             task.setAlignment(Pos.CENTER);
             tasks.getChildren().add(task);
             HBox.setHgrow(taskDetail, Priority.ALWAYS);
-            VBox.setMargin(task, new Insets(5, 0, 5, 0));
+            VBox.setMargin(task, new Insets(2, 0, 2, 0));
         }
 
-        return new VBox(projectTitle, note, tasks);
+        final VBox projectForm = new VBox(projectTitle, note, tasks);
+        projectForm.setAlignment(Pos.CENTER);
+        return projectForm;
     }
 }
