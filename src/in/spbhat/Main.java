@@ -22,6 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -60,7 +61,10 @@ public class Main extends Application {
         MenuBar menuBar = new MenuBar(fileMenu);
         menuBar.setUseSystemMenuBar(true);
 
-        VBox topPane = new VBox(menuBar);
+        PlannerTitlePane titlePane = new PlannerTitlePane();
+        HBox topPane = new HBox(menuBar, titlePane);
+        HBox.setHgrow(titlePane, Priority.ALWAYS);
+        topPane.setAlignment(Pos.CENTER);
 
         root.setTop(topPane);
 
@@ -68,7 +72,6 @@ public class Main extends Application {
         Section peopleSection = new PeopleSection();
         Section prioritiesSection = new PrioritiesSection();
         VBox sections = new VBox(
-                new PlannerTitlePane(), new Separator(),
                 projectsSection, new Separator(),
                 peopleSection, new Separator(),
                 prioritiesSection);
@@ -88,7 +91,7 @@ public class Main extends Application {
     private void saveSnapshot(Node node) {
         final WritableImage snapshot = node.snapshot(null, null);
         try {
-            String fileName = dateString + ".png";
+            String fileName = "plans/" + dateString + ".png";
             System.out.println(fileName);
             ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG",
                     new File(fileName));
