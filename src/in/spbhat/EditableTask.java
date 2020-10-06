@@ -22,6 +22,7 @@ public class EditableTask extends HBox {
         this.parent = parent;
         taskCompleted = new CheckBox();
         taskCompleted.setSelected(false);
+        taskCompleted.setAllowIndeterminate(true);
         taskCompleted.setOnAction(event -> taskCompleted());
 
         taskField = new TextField(taskDescription);
@@ -38,6 +39,7 @@ public class EditableTask extends HBox {
                 20, -1, true, true)));
         removeTaskBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         removeTaskBtn.setOnAction(event -> removeTask());
+        removeTaskBtn.setTooltip(new Tooltip("Remove this Task"));
 
         getChildren().addAll(taskCompleted, taskField, removeTaskBtn);
         setSpacing(2);
@@ -59,6 +61,11 @@ public class EditableTask extends HBox {
             taskField.setEditable(false);
             taskField.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
             taskField.setStyle("-fx-text-inner-color: white;");
+        } else if (taskCompleted.isIndeterminate()) {
+            System.out.println("Task is in progress");
+            taskField.setEditable(true);
+            taskField.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, null, null)));
+            taskField.setStyle("-fx-text-inner-color: black;");
         } else {
             System.out.println("Task is incomplete");
             taskField.setEditable(true);
