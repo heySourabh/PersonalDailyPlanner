@@ -5,9 +5,11 @@
 
 package in.spbhat;
 
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -26,23 +28,33 @@ public class PrioritiesSection extends Section {
         noteLabel.setFont(Section.notesFont);
         noteLabel.setTextFill(Color.GRAY);
 
-        TextArea writeAreaLeft = new TextArea();
-        writeAreaLeft.setFont(Section.writeAreaFont);
-        writeAreaLeft.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
-        HBox.setHgrow(writeAreaLeft, Priority.ALWAYS);
-        VBox.setVgrow(writeAreaLeft, Priority.ALWAYS);
+        TilePane taskListPane = new TilePane(Orientation.HORIZONTAL, 20, 2);
+        Button addBtn = new Button("Add", new ImageView(new Image(PrioritiesSection.class
+                .getResource("icons/add.png").toString(),
+                20, -1, true, true)));
+        addBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        addBtn.setTooltip(new Tooltip("Add New Task"));
+        addBtn.setOnAction(event -> {
+            final EditableTask newTask = new EditableTask(taskListPane, "");
+            taskListPane.getChildren()
+                    .add(taskListPane.getChildren().size() - 1, newTask);
+            newTask.requestFocus();
+        });
+        taskListPane.getChildren().add(addBtn);
+        taskListPane.setTileAlignment(Pos.TOP_LEFT);
 
-        TextArea writeAreaRight = new TextArea();
-        writeAreaRight.setFont(Section.writeAreaFont);
-        writeAreaRight.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
-        HBox.setHgrow(writeAreaRight, Priority.ALWAYS);
-        VBox.setVgrow(writeAreaRight, Priority.ALWAYS);
+        ScrollPane scrollPane = new ScrollPane(taskListPane);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(400);
 
-        HBox writeArea = new HBox(writeAreaLeft, writeAreaRight);
-        writeArea.setSpacing(10);
+        HBox tasksArea = new HBox(scrollPane);
+        HBox.setHgrow(scrollPane, Priority.ALWAYS);
+        tasksArea.setSpacing(20);
 
-        VBox content = new VBox(headingLabel, noteLabel, writeArea);
+        VBox content = new VBox(headingLabel, noteLabel, tasksArea);
         content.setAlignment(Pos.CENTER);
+        VBox.setVgrow(tasksArea, Priority.ALWAYS);
 
         return content;
     }
