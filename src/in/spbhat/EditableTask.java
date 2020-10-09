@@ -18,11 +18,16 @@ public class EditableTask extends HBox {
     private final TextField taskField;
     private final CheckBox taskCompleted;
 
-    public EditableTask(Pane parent, String taskDescription) {
+    public enum EditableTaskStatus {
+        INCOMPLETE, IN_PROCESS, COMPLETE
+    }
+
+    public EditableTask(Pane parent, String taskDescription, EditableTaskStatus status) {
         this.parent = parent;
         taskCompleted = new CheckBox();
-        taskCompleted.setSelected(false);
+        taskCompleted.setSelected(status == EditableTaskStatus.COMPLETE);
         taskCompleted.setAllowIndeterminate(true);
+        taskCompleted.setIndeterminate(status == EditableTaskStatus.IN_PROCESS);
         taskCompleted.setOnAction(event -> taskCompleted());
 
         taskField = new TextField(taskDescription);

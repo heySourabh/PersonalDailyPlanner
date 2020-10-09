@@ -5,8 +5,11 @@
 
 package in.spbhat;
 
+import in.spbhat.EditableTask.EditableTaskStatus;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,6 +17,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 public class PrioritiesSection extends Section {
+    public static ObservableList<Node> prioritiesTaskList;
+
     public PrioritiesSection() {
         super("Priorities", createContent());
     }
@@ -29,18 +34,16 @@ public class PrioritiesSection extends Section {
         noteLabel.setTextFill(Color.GRAY);
 
         TilePane taskListPane = new TilePane(Orientation.HORIZONTAL, 20, 2);
+        prioritiesTaskList = taskListPane.getChildren();
         Button addBtn = new Button("Add", new ImageView(new Image(PrioritiesSection.class
                 .getResource("icons/add.png").toString(),
                 20, -1, true, true)));
         addBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addBtn.setTooltip(new Tooltip("Add New Task"));
-        addBtn.setOnAction(event -> {
-            final EditableTask newTask = new EditableTask(taskListPane, "");
-            taskListPane.getChildren()
-                    .add(taskListPane.getChildren().size() - 1, newTask);
-            newTask.requestFocus();
-        });
-        taskListPane.getChildren().add(addBtn);
+        addBtn.setOnAction(event ->
+                addEditableTask(taskListPane, "", EditableTaskStatus.INCOMPLETE)
+                        .requestFocus());
+        prioritiesTaskList.add(addBtn);
         taskListPane.setTileAlignment(Pos.TOP_LEFT);
 
         ScrollPane scrollPane = new ScrollPane(taskListPane);
@@ -57,5 +60,11 @@ public class PrioritiesSection extends Section {
         VBox.setVgrow(tasksArea, Priority.ALWAYS);
 
         return content;
+    }
+
+    private static EditableTask addEditableTask(Pane taskListPane, String description, EditableTaskStatus status) {
+        EditableTask newTask = new EditableTask(taskListPane, description, status);
+        prioritiesTaskList.add(taskListPane.getChildren().size() - 1, newTask);
+        return newTask;
     }
 }
