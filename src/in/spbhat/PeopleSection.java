@@ -13,12 +13,12 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 public class PeopleSection extends Section {
+    public final static SimpleStringProperty peopleToReachOutProperty = new SimpleStringProperty();
+    public final static SimpleStringProperty peopleWaitingOnProperty = new SimpleStringProperty();
+
     public PeopleSection() {
         super("People", createContent());
     }
-
-    public final static SimpleStringProperty peopleToReachOutProperty = new SimpleStringProperty();
-    public final static SimpleStringProperty peopleWaitingOnProperty = new SimpleStringProperty();
 
     private static Pane createContent() {
         Pane peopleToReachOut = createPeopleForm(
