@@ -15,23 +15,29 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProjectSection extends Section {
     final static Font projectTitleTextFont = Font.loadFont(Section.class
             .getResource("fonts/Kalam-Regular.ttf").toString(), 20);
+
+    public final static int NUM_PROJECTS = 3;
+    public static List<ProjectDataProperty> projectDataProperties;
 
     public ProjectSection() {
         super("Projects", createContent());
     }
 
     private static Pane createContent() {
-        Pane project1 = createProjectForm(1);
-        Pane project2 = createProjectForm(2);
-        Pane project3 = createProjectForm(3);
-        HBox content = new HBox(project1, project2, project3);
-
-        HBox.setHgrow(project1, Priority.ALWAYS);
-        HBox.setHgrow(project2, Priority.ALWAYS);
-        HBox.setHgrow(project3, Priority.ALWAYS);
+        HBox content = new HBox();
+        projectDataProperties = new ArrayList<>(NUM_PROJECTS);
+        for (int i = 1; i <= NUM_PROJECTS; i++) {
+            ProjectDataProperty projectDataProperty = new ProjectDataProperty();
+            Pane project = createProjectForm(i, projectDataProperty);
+            content.getChildren().add(project);
+            HBox.setHgrow(project, Priority.ALWAYS);
+        }
 
         content.setSpacing(30);
         content.setAlignment(Pos.CENTER);
@@ -39,10 +45,12 @@ public class ProjectSection extends Section {
         return content;
     }
 
-    private static Pane createProjectForm(int number) {
+    private static Pane createProjectForm(int number, ProjectDataProperty projectDataProperty) {
         Label titleLabel = new Label("#" + number + ": ");
         titleLabel.setFont(Section.labelFont);
         TextField titleField = new TextField();
+        projectDataProperty.projectName
+                .bindBidirectional(titleField.textProperty());
         titleField.setPromptText("Project Name");
         titleField.setFont(projectTitleTextFont);
         titleField.setPadding(new Insets(2, 5, 2, 5));
@@ -58,10 +66,12 @@ public class ProjectSection extends Section {
         note.setTextAlignment(TextAlignment.LEFT);
 
         VBox tasks = new VBox();
-        for (int num = 1; num <= 5; num++) {
+        for (int num = 1; num <= ProjectDataProperty.NUM_PROJECT_TASKS; num++) {
             Label numLabel = new Label("" + num + ". ");
             numLabel.setFont(Section.labelFont);
             TextField taskDetail = new TextField();
+            projectDataProperty.projectTasks.get(num - 1)
+                    .bindBidirectional(taskDetail.textProperty());
             taskDetail.setPadding(new Insets(2, 5, 2, 5));
             taskDetail.setFont(Section.writeAreaFont);
             taskDetail.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
