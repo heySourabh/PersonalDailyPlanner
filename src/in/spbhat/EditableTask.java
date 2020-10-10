@@ -15,8 +15,8 @@ import javafx.scene.paint.Color;
 
 public class EditableTask extends HBox {
     private final Pane parent;
-    private final TextField taskField;
-    private final CheckBox taskCompleted;
+    public final TextField taskField;
+    public final CheckBox taskCompleted;
 
     public enum EditableTaskStatus {
         INCOMPLETE, IN_PROCESS, COMPLETE
