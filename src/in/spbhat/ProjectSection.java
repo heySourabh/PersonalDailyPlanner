@@ -34,6 +34,7 @@ public class ProjectSection extends Section {
         projectDataProperties = new ArrayList<>(NUM_PROJECTS);
         for (int i = 1; i <= NUM_PROJECTS; i++) {
             ProjectDataProperty projectDataProperty = new ProjectDataProperty();
+            projectDataProperties.add(projectDataProperty);
             Pane project = createProjectForm(i, projectDataProperty);
             content.getChildren().add(project);
             HBox.setHgrow(project, Priority.ALWAYS);
