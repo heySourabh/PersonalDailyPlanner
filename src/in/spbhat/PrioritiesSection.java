@@ -62,7 +62,7 @@ public class PrioritiesSection extends Section {
         return content;
     }
 
-    private static EditableTask addEditableTask(Pane taskListPane, String description, EditableTaskStatus status) {
+    public static EditableTask addEditableTask(Pane taskListPane, String description, EditableTaskStatus status) {
         EditableTask newTask = new EditableTask(taskListPane, description, status);
         prioritiesTaskList.add(taskListPane.getChildren().size() - 1, newTask);
         return newTask;
