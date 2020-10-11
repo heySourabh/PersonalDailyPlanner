@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;
 
 public class PrioritiesSection extends Section {
     public static ObservableList<Node> prioritiesTaskList;
+    private static TilePane taskListPane;
 
     public PrioritiesSection() {
         super("Priorities", createContent());
@@ -33,7 +34,7 @@ public class PrioritiesSection extends Section {
         noteLabel.setFont(Section.notesFont);
         noteLabel.setTextFill(Color.GRAY);
 
-        TilePane taskListPane = new TilePane(Orientation.HORIZONTAL, 20, 2);
+        taskListPane = new TilePane(Orientation.HORIZONTAL, 20, 2);
         prioritiesTaskList = taskListPane.getChildren();
         Button addBtn = new Button("Add", new ImageView(new Image(PrioritiesSection.class
                 .getResource("icons/add.png").toString(),
@@ -41,7 +42,7 @@ public class PrioritiesSection extends Section {
         addBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addBtn.setTooltip(new Tooltip("Add New Task"));
         addBtn.setOnAction(event ->
-                addEditableTask(taskListPane, "", EditableTaskStatus.INCOMPLETE)
+                addEditableTask("", EditableTaskStatus.INCOMPLETE)
                         .requestFocus());
         prioritiesTaskList.add(addBtn);
         taskListPane.setTileAlignment(Pos.TOP_LEFT);
@@ -62,7 +63,7 @@ public class PrioritiesSection extends Section {
         return content;
     }
 
-    public static EditableTask addEditableTask(Pane taskListPane, String description, EditableTaskStatus status) {
+    public static EditableTask addEditableTask(String description, EditableTaskStatus status) {
         EditableTask newTask = new EditableTask(taskListPane, description, status);
         prioritiesTaskList.add(taskListPane.getChildren().size() - 1, newTask);
         return newTask;
