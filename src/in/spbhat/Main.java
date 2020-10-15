@@ -7,6 +7,7 @@ package in.spbhat;
 
 import in.spbhat.EditableTask.EditableTaskStatus;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -32,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.concurrent.locks.LockSupport;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -41,6 +43,7 @@ public class Main extends Application {
     static Section projectsSection;
     static Section peopleSection;
     static Section prioritiesSection;
+    static VBox sections;
 
     public static void main(String[] args) {
         launch(args);
@@ -54,7 +57,26 @@ public class Main extends Application {
                 new Image(Main.class.getResource("icons/icon_64.png").toString()),
                 new Image(Main.class.getResource("icons/icon_128.png").toString()));
         stage.setTitle("Productivity Planner");
+        stage.setOnCloseRequest(event -> save(sections));
+        moveToFrontIntermittently(stage);
         stage.show();
+    }
+
+    private final static int REMINDER_MINUTES = 30;
+
+    private void moveToFrontIntermittently(Stage stage) {
+        final Thread thread = new Thread(() -> {
+            while (true) {
+                long waitNanos = REMINDER_MINUTES * 60 * 1_000_000_000L;
+                LockSupport.parkNanos(waitNanos);
+                Platform.runLater(() -> {
+                    stage.setIconified(false);
+                    stage.toFront();
+                });
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private Parent createContent() {
@@ -76,7 +98,7 @@ public class Main extends Application {
         projectsSection = new ProjectSection();
         peopleSection = new PeopleSection();
         prioritiesSection = new PrioritiesSection();
-        VBox sections = new VBox(
+        sections = new VBox(
                 projectsSection, new Separator(),
                 peopleSection, new Separator(),
                 prioritiesSection);
