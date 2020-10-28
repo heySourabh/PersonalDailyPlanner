@@ -18,7 +18,7 @@ public class PlannerTitlePane extends VBox {
     public PlannerTitlePane() {
         titleFont = Font.loadFont(getClass()
                 .getResource("fonts/Cinzel-SemiBold.ttf").toString(), 24);
-        Text title = new Text(String.format("Productivity Planner (%s)", Main.dateString));
+        Text title = new Text(String.format("Productivity Planner (%s)", Planner.dateString));
         title.setFont(titleFont);
         title.setEffect(new InnerShadow());
         title.setFill(Color.WHITE);

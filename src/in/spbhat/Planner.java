@@ -38,7 +38,7 @@ import java.util.concurrent.locks.LockSupport;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
-public class Main extends Application {
+public class Planner extends Application {
     static final String dateString = now().format(ofPattern("dd-MM-yyyy"));
     static Section projectsSection;
     static Section peopleSection;
@@ -54,8 +54,8 @@ public class Main extends Application {
         Scene scene = new Scene(createContent(), 800, 800);
         stage.setScene(scene);
         stage.getIcons().addAll(
-                new Image(Main.class.getResource("icons/icon_64.png").toString()),
-                new Image(Main.class.getResource("icons/icon_128.png").toString()));
+                new Image(Planner.class.getResource("icons/icon_64.png").toString()),
+                new Image(Planner.class.getResource("icons/icon_128.png").toString()));
         stage.setTitle("Productivity Planner");
         stage.setOnCloseRequest(event -> save(sections));
         moveToFrontIntermittently(stage);
