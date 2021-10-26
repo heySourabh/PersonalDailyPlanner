@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.
+ * Copyright (c) 2021.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -32,6 +32,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.locks.LockSupport;
 
@@ -39,7 +42,9 @@ import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 public class Planner extends Application {
-    static final String dateString = now().format(ofPattern("dd-MM-yyyy"));
+    static final DateTimeFormatter dateFormatter = ofPattern("dd-MM-yyyy");
+    static final LocalDateTime now = now();
+    static final String todayDateString = now.format(dateFormatter);
     static Section projectsSection;
     static Section peopleSection;
     static Section prioritiesSection;
@@ -54,8 +59,10 @@ public class Planner extends Application {
         Scene scene = new Scene(createContent(), 800, 800);
         stage.setScene(scene);
         stage.getIcons().addAll(
-                new Image(Planner.class.getResource("icons/icon_64.png").toString()),
-                new Image(Planner.class.getResource("icons/icon_128.png").toString()));
+                new Image(Objects.requireNonNull(Planner.class
+                        .getResource("icons/icon_64.png")).toString()),
+                new Image(Objects.requireNonNull(Planner.class
+                        .getResource("icons/icon_128.png")).toString()));
         stage.setTitle("Productivity Planner");
         stage.setOnCloseRequest(event -> save(sections));
         moveToFrontIntermittently(stage);
@@ -128,8 +135,8 @@ public class Planner extends Application {
     }
 
     private void saveImageAndData(Node node) {
-        String imageFilename = "plans/" + dateString + ".png";
-        String dataFileName = "plans/" + dateString + ".dat";
+        String imageFilename = "plans/" + todayDateString + ".png";
+        String dataFileName = "plans/" + todayDateString + ".dat";
         // Saving image
         final WritableImage snapshot = node.snapshot(null, null);
         try {
@@ -177,10 +184,15 @@ public class Planner extends Application {
     }
 
     private void loadPlanIfAvailable() {
-        String dataFileName = "plans/" + dateString + ".dat";
-        File dataFile = new File(dataFileName);
-        if (dataFile.exists()) {
-            loadPlan(dataFile);
+        // Go back up to four days
+        for (int day = 0; day < 4; day++) {
+            String dateString = now.minusDays(day).format(dateFormatter);
+            String dataFileName = "plans/" + dateString + ".dat";
+            File dataFile = new File(dataFileName);
+            if (dataFile.exists()) {
+                loadPlan(dataFile);
+                break;
+            }
         }
     }
 

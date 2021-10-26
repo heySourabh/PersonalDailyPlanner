@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.
+ * Copyright (c) 2021.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -12,13 +12,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.Objects;
+
 public class PlannerTitlePane extends VBox {
     final Font titleFont;
 
     public PlannerTitlePane() {
-        titleFont = Font.loadFont(getClass()
-                .getResource("fonts/Cinzel-SemiBold.ttf").toString(), 24);
-        Text title = new Text(String.format("Productivity Planner (%s)", Planner.dateString));
+        titleFont = Font.loadFont(Objects.requireNonNull(getClass()
+                .getResource("fonts/Cinzel-SemiBold.ttf")).toString(), 24);
+        Text title = new Text(String.format("Productivity Planner (%s)", Planner.todayDateString));
         title.setFont(titleFont);
         title.setEffect(new InnerShadow());
         title.setFill(Color.WHITE);
