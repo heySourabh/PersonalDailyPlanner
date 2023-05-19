@@ -8,6 +8,7 @@ package in.spbhat;
 import in.spbhat.EditableTask.EditableTaskStatus;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -56,14 +58,14 @@ public class Planner extends Application {
 
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(createContent(), 800, 800);
+        Scene scene = new Scene(createContent(), 900, 1000);
         stage.setScene(scene);
         stage.getIcons().addAll(
                 new Image(Objects.requireNonNull(Planner.class
                         .getResource("icons/icon_64.png")).toString()),
                 new Image(Objects.requireNonNull(Planner.class
                         .getResource("icons/icon_128.png")).toString()));
-        stage.setTitle("Productivity Planner");
+        stage.setTitle("Productivity Planner (by Sourabh Bhat)");
         stage.setOnCloseRequest(event -> save(sections));
         moveToFrontIntermittently(stage);
         stage.show();
@@ -120,7 +122,30 @@ public class Planner extends Application {
         saveMenuItem.setOnAction(event -> save(sections));
         loadPlanIfAvailable();
 
+        startDurationUpdateTimer();
+
         return root;
+    }
+
+    private void sleepFor(Duration duration) {
+        LockSupport.parkNanos(duration.toNanos());
+    }
+
+    private void startDurationUpdateTimer() {
+        Duration durationBetweenUpdates = Duration.ofSeconds(5);
+        Thread thread = new Thread(() -> {
+            while (true) {
+                sleepFor(durationBetweenUpdates);
+                for (Node node : PrioritiesSection.prioritiesTaskList) {
+                    if (node instanceof EditableTask task && task.taskCompleted.isIndeterminate()) {
+                        SimpleObjectProperty<Duration> actualDuration = task.actualDuration;
+                        actualDuration.set(actualDuration.get().plus(durationBetweenUpdates));
+                    }
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private void save(Node node) {
@@ -168,7 +193,7 @@ public class Planner extends Application {
                     PeopleSection.peopleWaitingOnProperty.get()));
 
             // save Priorities section - tasks and status
-            // last one is add button
+            // last one is the add button
             int numPrioritiesTasks = PrioritiesSection.prioritiesTaskList.size() - 1;
             fileWriter.println(numPrioritiesTasks);
             for (int t = 0; t < numPrioritiesTasks; t++) {
@@ -177,6 +202,8 @@ public class Planner extends Application {
                         : task.taskCompleted.isIndeterminate() ? EditableTaskStatus.IN_PROCESS
                         : EditableTaskStatus.INCOMPLETE);
                 fileWriter.println(task.taskField.getText());
+                fileWriter.println(task.expectedDuration.get().toMinutes());
+                fileWriter.println(task.actualDuration.get().toMinutes());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -225,8 +252,19 @@ public class Planner extends Application {
             for (int t = 0; t < numPrioritiesTasks; t++) {
                 String status = fileScanner.nextLine();
                 String taskDescription = fileScanner.nextLine();
+                int expectedDurationMinutes = PrioritiesSection.defaultExpectedDurationMinutes;
+                int actualDurationMinutes = PrioritiesSection.defaultActualDurationMinutes;
+                try {
+                    expectedDurationMinutes = fileScanner.nextInt();
+                    fileScanner.nextLine();
+                    actualDurationMinutes = Integer.parseInt(fileScanner.nextLine());
+                } catch (Exception ignore) {
+                    // ignore in case of parsing error
+                    // thus enabling to read files from old version
+                }
                 PrioritiesSection.addEditableTask(
-                        taskDescription, EditableTaskStatus.valueOf(status));
+                        taskDescription, EditableTaskStatus.valueOf(status),
+                        expectedDurationMinutes, actualDurationMinutes);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
