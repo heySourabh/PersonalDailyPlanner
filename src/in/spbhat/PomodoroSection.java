@@ -135,12 +135,19 @@ public class PomodoroSection extends Section {
                             sleepFor(Duration.ofSeconds(1));
                         } while (!pomodoroRunning);
 
+                        if (seconds == 0) { // Show message about the Pomodoro state
+                            pomodoroRunning = false;
+                            Platform.runLater(() -> {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setHeaderText("Beginning: " + pomodoroState);
+                                alert.setContentText("Time: " + format(pomodoroState.duration));
+                                alert.showAndWait();
+                                pomodoroRunning = true;
+                            });
+                        }
+
                         Duration remainingSeconds = pomodoroState.duration.minusSeconds(seconds);
-                        int hr = remainingSeconds.toHoursPart();
-                        int min = remainingSeconds.toMinutesPart();
-                        int sec = remainingSeconds.toSecondsPart();
-                        String timeStr = (hr != 0 ? "%02d:".formatted(hr) : "") + "%02d:%02d".formatted(min, sec);
-                        Platform.runLater(() -> super.titleText.setText("Pomodoro | %s: %s".formatted(pomodoroState, timeStr)));
+                        Platform.runLater(() -> super.titleText.setText("Pomodoro | %s: %s".formatted(pomodoroState, format(remainingSeconds))));
                     }
                     indicator.setActive(false);
                 }
@@ -153,6 +160,13 @@ public class PomodoroSection extends Section {
 
     private static void sleepFor(Duration duration) {
         LockSupport.parkNanos(duration.toNanos());
+    }
+
+    private static String format(Duration duration) {
+        int hr = duration.toHoursPart();
+        int min = duration.toMinutesPart();
+        int sec = duration.toSecondsPart();
+        return (hr != 0 ? "%02d:".formatted(hr) : "") + "%02d:%02d".formatted(min, sec);
     }
 
     private static void showPomodoroSettings() {
