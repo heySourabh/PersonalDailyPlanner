@@ -53,8 +53,11 @@ public class Planner extends Application {
         launch(args);
     }
 
+    private static Stage primaryStage;
+
     @Override
     public void start(Stage stage) {
+        primaryStage = stage;
         Scene scene = new Scene(createContent(), 900, 1000);
         stage.setScene(scene);
         stage.getIcons().addAll(
@@ -64,25 +67,29 @@ public class Planner extends Application {
                         .getResource("icons/icon_128.png")).toString()));
         stage.setTitle("Productivity Planner (by Sourabh Bhat)");
         stage.setOnCloseRequest(event -> save(sections, event));
-        moveToFrontIntermittently(stage);
+        moveToFrontIntermittently();
         stage.show();
     }
 
     private final static int REMINDER_MINUTES = 30;
 
-    private void moveToFrontIntermittently(Stage stage) {
+    private void moveToFrontIntermittently() {
         final Thread thread = new Thread(() -> {
             while (true) {
                 long waitNanos = REMINDER_MINUTES * 60 * 1_000_000_000L;
                 LockSupport.parkNanos(waitNanos);
-                Platform.runLater(() -> {
-                    stage.setIconified(false);
-                    stage.toFront();
-                });
+                movePrimaryStageToFront();
             }
         });
         thread.setDaemon(true);
         thread.start();
+    }
+
+    public static void movePrimaryStageToFront() {
+        Platform.runLater(() -> {
+            primaryStage.setIconified(false);
+            primaryStage.toFront();
+        });
     }
 
     private Parent createContent() {
