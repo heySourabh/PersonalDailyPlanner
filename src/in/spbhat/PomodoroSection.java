@@ -8,16 +8,22 @@ package in.spbhat;
 import in.spbhat.icons.Icon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.io.File;
 import java.time.Duration;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.locks.LockSupport;
 
 public class PomodoroSection extends Section {
@@ -44,7 +50,7 @@ public class PomodoroSection extends Section {
     }
 
     private static int longBreakInterval = 4;
-    private static int soundLevel = 75;
+    private static final SimpleDoubleProperty soundLevel = new SimpleDoubleProperty(10);
     public static boolean pomodoroRunning = false;
     public static PomodoroState currentPomodoroState = null;
 
@@ -54,7 +60,6 @@ public class PomodoroSection extends Section {
     }
 
     private static Button startStopBtn;
-
     private static HBox indicatorsContent;
 
     private static Pane createContent() {
@@ -100,12 +105,14 @@ public class PomodoroSection extends Section {
 
     private static void stopPomodoro() {
         pomodoroRunning = false;
+        stopBackgroundSound();
         startStopBtn.setGraphic(Icon.graphic("start.png", 20));
         System.out.println("Stopping pomodoro");
     }
 
     private static void startPomodoro() {
         pomodoroRunning = true;
+        startBackgroundSound(currentPomodoroState);
         startStopBtn.setGraphic(Icon.graphic("stop.png", 20));
         System.out.println("Starting pomodoro");
     }
@@ -137,11 +144,13 @@ public class PomodoroSection extends Section {
 
                         if (seconds == 0) { // Show message about the Pomodoro state
                             pomodoroRunning = false;
+                            stopBackgroundSound();
                             Platform.runLater(() -> {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setHeaderText("Beginning: " + pomodoroState);
                                 alert.setContentText("Time: " + format(pomodoroState.duration));
                                 alert.showAndWait();
+                                startBackgroundSound(pomodoroState);
                                 pomodoroRunning = true;
                             });
                         }
@@ -190,7 +199,7 @@ public class PomodoroSection extends Section {
         HBox longBreakIntervalBox = new HBox(new Label("Long Break After:  "), longBreakIntervalField, new Label("Pomodoros"));
         longBreakIntervalBox.setSpacing(5);
 
-        Slider soundLevelSlider = new Slider(0, 100, soundLevel);
+        Slider soundLevelSlider = new Slider(0, 100, soundLevel.get());
         soundLevelSlider.setBlockIncrement(5);
         soundLevelSlider.setShowTickMarks(true);
         soundLevelSlider.setShowTickLabels(true);
@@ -222,9 +231,44 @@ public class PomodoroSection extends Section {
                 PomodoroState.LONG_BREAK.duration = Duration.ofMinutes(longBreakMinutes);
 
                 longBreakInterval = Integer.parseInt(longBreakIntervalField.getText());
-                soundLevel = (int) soundLevelSlider.getValue();
+                soundLevel.set(soundLevelSlider.getValue());
             }
         });
+    }
+
+    private static MediaPlayer bgSoundPlayer;
+
+    private static void startBackgroundSound(PomodoroState pomodoroState) {
+        if (bgSoundPlayer != null) {
+            bgSoundPlayer.dispose();
+        }
+        chooseBackgroundSoundFile(pomodoroState).ifPresent(file -> {
+            String source = file.toURI().toString();
+            bgSoundPlayer = new MediaPlayer(new Media(source));
+            bgSoundPlayer.volumeProperty().bind(soundLevel.divide(100.0));
+            bgSoundPlayer.setOnEndOfMedia(() -> startBackgroundSound(pomodoroState));
+            bgSoundPlayer.play();
+        });
+    }
+
+    private static void stopBackgroundSound() {
+        if (bgSoundPlayer != null) {
+            bgSoundPlayer.stop();
+        }
+    }
+
+    private static Optional<File> chooseBackgroundSoundFile(PomodoroState pomodoroState) {
+        File baseSoundPath = switch (pomodoroState) {
+            case WORKING -> new File("sounds/working/");
+            case SHORT_BREAK, LONG_BREAK -> new File("sounds/break/");
+        };
+        File[] soundFiles = baseSoundPath.listFiles(file -> file.getPath().endsWith(".mp3"));
+
+        if (soundFiles == null || soundFiles.length == 0) {
+            System.out.println("Unable to locate mp3 files in the folder: " + baseSoundPath.getAbsolutePath());
+            return Optional.empty();
+        }
+        return Optional.of(soundFiles[new Random().nextInt(soundFiles.length)]);
     }
 
     public static class Indicator extends Circle {
