@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -62,7 +63,7 @@ public class Planner extends Application {
                 new Image(Objects.requireNonNull(Planner.class
                         .getResource("icons/icon_128.png")).toString()));
         stage.setTitle("Productivity Planner (by Sourabh Bhat)");
-        stage.setOnCloseRequest(event -> save(sections));
+        stage.setOnCloseRequest(event -> save(sections, event));
         moveToFrontIntermittently(stage);
         stage.show();
     }
@@ -117,19 +118,23 @@ public class Planner extends Application {
         sections.setPadding(new Insets(0, 10, 10, 10));
         root.setCenter(sections);
 
-        saveMenuItem.setOnAction(event -> save(sections));
+        saveMenuItem.setOnAction(event -> save(sections, event));
         loadPlanIfAvailable();
 
         return root;
     }
 
-    private void save(Node node) {
+    private void save(Node node, Event event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.getButtonTypes().addAll(ButtonType.NO);
         alert.setHeaderText("Save image and data?");
         alert.setContentText("");
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType.equals(ButtonType.OK)) {
                 saveImageAndData(node);
+            }
+            if (buttonType.equals(ButtonType.CANCEL)) {
+                event.consume();
             }
         });
     }
