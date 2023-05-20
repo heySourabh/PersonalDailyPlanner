@@ -268,7 +268,9 @@ public class PomodoroSection extends Section {
             System.out.println("Unable to locate mp3 files in the folder: " + baseSoundPath.getAbsolutePath());
             return Optional.empty();
         }
-        return Optional.of(soundFiles[new Random().nextInt(soundFiles.length)]);
+        File chosenFile = soundFiles[new Random().nextInt(soundFiles.length)];
+        System.out.println("Sound file:" + chosenFile.getAbsoluteFile());
+        return Optional.of(chosenFile);
     }
 
     public static class Indicator extends Circle {
