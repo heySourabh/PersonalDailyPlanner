@@ -7,13 +7,12 @@ package in.spbhat;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.effect.InnerShadow;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 public class Section extends VBox {
     final static Font sectionTitleFont = Font.loadFont(Section.class
@@ -25,13 +24,14 @@ public class Section extends VBox {
     final static Font writeAreaFont = Font.loadFont(Section.class
             .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
 
-    public Section(String title, Pane content) {
-        Text titleText = new Text(title);
-        titleText.setFont(sectionTitleFont);
-        titleText.setEffect(new InnerShadow());
-        titleText.setFill(Color.RED);
+    Label titleText;
 
-        getChildren().addAll(titleText, content);
+    public Section(String title, Pane content) {
+        titleText = new Label(title);
+        titleText.setFont(sectionTitleFont);
+        HBox titleBox = new HBox(titleText);
+
+        getChildren().addAll(titleBox, content);
         setAlignment(Pos.TOP_CENTER);
         setPadding(new Insets(5));
         setSpacing(2);

@@ -8,7 +8,6 @@ package in.spbhat;
 import in.spbhat.EditableTask.EditableTaskStatus;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -47,9 +45,7 @@ public class Planner extends Application {
     static final DateTimeFormatter dateFormatter = ofPattern("dd-MM-yyyy");
     static final LocalDateTime now = now();
     static final String todayDateString = now.format(dateFormatter);
-    static Section projectsSection;
-    static Section peopleSection;
-    static Section prioritiesSection;
+    static Section pomodoroSection, projectsSection, peopleSection, prioritiesSection;
     static VBox sections;
 
     public static void main(String[] args) {
@@ -104,13 +100,15 @@ public class Planner extends Application {
 
         root.setTop(topPane);
 
+        pomodoroSection = new PomodoroSection();
         projectsSection = new ProjectSection();
         peopleSection = new PeopleSection();
         prioritiesSection = new PrioritiesSection();
         sections = new VBox(
-                projectsSection, new Separator(),
-                peopleSection, new Separator(),
-                prioritiesSection);
+                new Separator(), pomodoroSection,
+                new Separator(), projectsSection,
+                new Separator(), peopleSection,
+                new Separator(), prioritiesSection);
         VBox.setVgrow(projectsSection, Priority.ALWAYS);
         VBox.setVgrow(peopleSection, Priority.ALWAYS);
         VBox.setVgrow(prioritiesSection, Priority.ALWAYS);
@@ -122,30 +120,7 @@ public class Planner extends Application {
         saveMenuItem.setOnAction(event -> save(sections));
         loadPlanIfAvailable();
 
-        startDurationUpdateTimer();
-
         return root;
-    }
-
-    private void sleepFor(Duration duration) {
-        LockSupport.parkNanos(duration.toNanos());
-    }
-
-    private void startDurationUpdateTimer() {
-        Duration durationBetweenUpdates = Duration.ofSeconds(5);
-        Thread thread = new Thread(() -> {
-            while (true) {
-                sleepFor(durationBetweenUpdates);
-                for (Node node : PrioritiesSection.prioritiesTaskList) {
-                    if (node instanceof EditableTask task && task.taskCompleted.isIndeterminate()) {
-                        SimpleObjectProperty<Duration> actualDuration = task.actualDuration;
-                        actualDuration.set(actualDuration.get().plus(durationBetweenUpdates));
-                    }
-                }
-            }
-        });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private void save(Node node) {

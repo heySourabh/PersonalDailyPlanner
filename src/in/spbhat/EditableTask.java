@@ -5,6 +5,7 @@
 
 package in.spbhat;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -59,16 +60,17 @@ public class EditableTask extends HBox {
         removeTaskBtn.setOnAction(event -> removeTask());
         removeTaskBtn.setTooltip(new Tooltip("Remove this Task"));
 
-        ClockPane clockPane = new ClockPane(20);
+        ClockFace clockFace = new ClockFace(20);
         Button timerBtn = new Button();
-        timerBtn.setGraphic(clockPane);
+        timerBtn.setGraphic(clockFace);
         timerBtn.setOnAction(e -> editDurations());
+        timerBtn.setTooltip(new Tooltip("Edit expected time / actual time taken by this task"));
 
         getChildren().addAll(taskCompleted, taskField, timerBtn, removeTaskBtn);
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
-        actualDuration.addListener((observable, oldValue, newValue) -> clockPane.update());
+        actualDuration.addListener((observable, oldValue, newValue) -> Platform.runLater(clockFace::update));
     }
 
     private void taskCompleted() {
@@ -144,7 +146,7 @@ public class EditableTask extends HBox {
                 try {
                     int expectedMinutes = Integer.parseInt(expectedDurationField.getText());
                     int actualMinutes = Integer.parseInt(actualDurationField.getText());
-                    if (expectedMinutes > 0 && actualMinutes > 0) {
+                    if (expectedMinutes > 0 && actualMinutes >= 0) {
                         expectedDuration.set(Duration.ofMinutes(expectedMinutes));
                         actualDuration.set(Duration.ofMinutes(actualMinutes));
                     }
@@ -155,21 +157,21 @@ public class EditableTask extends HBox {
         });
     }
 
-    class ClockPane extends Pane {
+    class ClockFace extends Pane {
         Circle expectedDurationGraphic;
         Arc actualDurationGraphic;
 
-        ClockPane(double size) {
+        ClockFace(double size) {
             double radius = size / 2;
             expectedDurationGraphic = new Circle(radius, radius, radius);
             expectedDurationGraphic.setFill(Color.GREENYELLOW);
             expectedDurationGraphic.setStroke(Color.BLACK);
-            expectedDurationGraphic.getStrokeDashArray().addAll(4.0, 3.0);
             actualDurationGraphic = new Arc(radius, radius, radius, radius, 90, 0);
             actualDurationGraphic.setFill(Color.INDIANRED);
             actualDurationGraphic.setType(ArcType.ROUND);
             actualDurationGraphic.setStroke(Color.BLACK);
             getChildren().addAll(expectedDurationGraphic, actualDurationGraphic);
+            setPrefSize(size, size);
             update();
         }
 

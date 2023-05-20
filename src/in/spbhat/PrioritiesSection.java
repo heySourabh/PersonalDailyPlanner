@@ -6,6 +6,7 @@
 package in.spbhat;
 
 import in.spbhat.EditableTask.EditableTaskStatus;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -16,6 +17,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.time.Duration;
+import java.util.concurrent.locks.LockSupport;
+
 public class PrioritiesSection extends Section {
     public static ObservableList<Node> prioritiesTaskList;
     private static TilePane taskListPane;
@@ -25,6 +29,7 @@ public class PrioritiesSection extends Section {
 
     public PrioritiesSection() {
         super("Priorities", createContent());
+        startTaskDurationUpdateTimer();
     }
 
     private static Pane createContent() {
@@ -64,6 +69,31 @@ public class PrioritiesSection extends Section {
         VBox.setVgrow(tasksArea, Priority.ALWAYS);
 
         return content;
+    }
+
+
+    private void sleepFor(Duration duration) {
+        LockSupport.parkNanos(duration.toNanos());
+    }
+
+    private void startTaskDurationUpdateTimer() {
+        Duration durationBetweenUpdates = Duration.ofSeconds(5);
+        Thread thread = new Thread(() -> {
+            while (true) {
+                do {
+                    sleepFor(durationBetweenUpdates);
+                } while (!PomodoroSection.pomodoroRunning || PomodoroSection.currentPomodoroState != PomodoroSection.PomodoroState.WORKING);
+
+                for (Node node : prioritiesTaskList) {
+                    if (node instanceof EditableTask task && task.taskCompleted.isIndeterminate()) {
+                        SimpleObjectProperty<Duration> actualDuration = task.actualDuration;
+                        actualDuration.set(actualDuration.get().plus(durationBetweenUpdates));
+                    }
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public static EditableTask addEditableTask(String description, EditableTaskStatus status, int expectedDurationMinutes, int actualDurationMinutes) {

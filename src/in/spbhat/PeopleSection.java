@@ -51,7 +51,7 @@ public class PeopleSection extends Section {
         writeArea.setFont(Section.writeAreaFont);
         writeArea.setWrapText(true);
         writeArea.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
-        writeArea.setPrefRowCount(3);
+        writeArea.setPrefRowCount(6);
         VBox.setVgrow(writeArea, Priority.ALWAYS);
 
         VBox peopleForm = new VBox(headingLabel, noteLabel, writeArea);
