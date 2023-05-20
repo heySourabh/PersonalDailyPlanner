@@ -6,14 +6,13 @@
 package in.spbhat;
 
 import in.spbhat.EditableTask.EditableTaskStatus;
+import in.spbhat.icons.Icon;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -44,9 +43,7 @@ public class PrioritiesSection extends Section {
 
         taskListPane = new TilePane(Orientation.HORIZONTAL, 20, 2);
         prioritiesTaskList = taskListPane.getChildren();
-        Button addBtn = new Button("Add", new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/add.png").toString(),
-                20, -1, true, true)));
+        Button addBtn = new Button("Add", Icon.graphic("add.png", 20));
         addBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addBtn.setTooltip(new Tooltip("Add New Task"));
         addBtn.setOnAction(event ->

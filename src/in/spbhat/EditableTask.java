@@ -5,14 +5,13 @@
 
 package in.spbhat;
 
+import in.spbhat.icons.Icon;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -53,9 +52,7 @@ public class EditableTask extends HBox {
 
         HBox.setHgrow(taskField, Priority.ALWAYS);
 
-        Button removeTaskBtn = new Button("Remove", new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/remove.png").toString(),
-                20, -1, true, true)));
+        Button removeTaskBtn = new Button("Remove", Icon.graphic("remove.png", 20));
         removeTaskBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         removeTaskBtn.setOnAction(event -> removeTask());
         removeTaskBtn.setTooltip(new Tooltip("Remove this Task"));
@@ -131,8 +128,7 @@ public class EditableTask extends HBox {
         durationsBox.setPadding(new Insets(20));
 
         DialogPane dialogPane = new DialogPane();
-        Node graphic = new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/sliders.png").toString()));
+        Node graphic = Icon.graphic("sliders.png", 64);
         dialogPane.setPrefWidth(400);
         dialogPane.setGraphic(graphic);
         dialogPane.setHeaderText("Task: " + taskField.getText());

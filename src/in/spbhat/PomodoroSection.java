@@ -5,6 +5,7 @@
 
 package in.spbhat;
 
+import in.spbhat.icons.Icon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -12,8 +13,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -80,9 +79,7 @@ public class PomodoroSection extends Section {
             }
         });
 
-        Button pomodoroSettings = new Button("Settings", new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/sliders.png").toString(),
-                20, -1, true, true)));
+        Button pomodoroSettings = new Button("Settings", Icon.graphic("sliders.png", 20));
         pomodoroSettings.setOnAction(e -> showPomodoroSettings());
         pomodoroSettings.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         pomodoroSettings.setTooltip(new Tooltip("Pomodoro Settings"));
@@ -103,15 +100,13 @@ public class PomodoroSection extends Section {
 
     private static void stopPomodoro() {
         pomodoroRunning = false;
-        startStopBtn.setGraphic(new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/start.png").toString())));
+        startStopBtn.setGraphic(Icon.graphic("start.png", 20));
         System.out.println("Stopping pomodoro");
     }
 
     private static void startPomodoro() {
         pomodoroRunning = true;
-        startStopBtn.setGraphic(new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/stop.png").toString())));
+        startStopBtn.setGraphic(Icon.graphic("stop.png", 20));
         System.out.println("Starting pomodoro");
     }
 
@@ -193,8 +188,7 @@ public class PomodoroSection extends Section {
         contentBox.setPadding(new Insets(10, 100, 10, 100));
 
         DialogPane dialogPane = new DialogPane();
-        dialogPane.setGraphic(new ImageView(new Image(PrioritiesSection.class
-                .getResource("icons/sliders.png").toString())));
+        dialogPane.setGraphic(Icon.graphic("sliders.png", 64));
         dialogPane.setHeaderText("Pomodoro Settings");
         dialogPane.setContent(contentBox);
 
