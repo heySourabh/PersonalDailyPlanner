@@ -70,7 +70,7 @@ public class EditableTask extends HBox {
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
-        actualDuration.addListener((observable, oldValue, newValue) -> Platform.runLater(clockFace::update));
+        actualDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
     }
 
     private void taskCompleted() {
@@ -177,7 +177,8 @@ public class EditableTask extends HBox {
 
         void update() {
             double durationRatio = Math.min(actualDuration.get().toSeconds() / (double) expectedDuration.get().toSeconds(), 1);
-            actualDurationGraphic.lengthProperty().set(-360 * durationRatio);
+            Platform.runLater(() ->
+                    actualDurationGraphic.lengthProperty().set(-360 * durationRatio));
         }
     }
 }
