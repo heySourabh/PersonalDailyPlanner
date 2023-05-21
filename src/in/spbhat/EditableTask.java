@@ -81,17 +81,17 @@ public class EditableTask extends HBox {
 
     private void styleTextField() {
         if (taskCompleted.isSelected()) {
-            System.out.println("Task completed");
+            System.out.printf("Task '%s' completed%n", taskField.getText());
             taskField.setEditable(false);
             taskField.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
             taskField.setStyle("-fx-text-inner-color: white;");
         } else if (taskCompleted.isIndeterminate()) {
-            System.out.println("Task is in progress");
+            System.out.printf("Task '%s' is in progress%n", taskField.getText());
             taskField.setEditable(true);
             taskField.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, null, null)));
             taskField.setStyle("-fx-text-inner-color: black;");
         } else {
-            System.out.println("Task is incomplete");
+            System.out.printf("Task '%s' is incomplete%n", taskField.getText());
             taskField.setEditable(true);
             taskField.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
             taskField.setStyle("-fx-text-inner-color: black;");

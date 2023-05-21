@@ -7,6 +7,7 @@ package in.spbhat;
 
 import in.spbhat.EditableTask.EditableTaskStatus;
 import in.spbhat.icons.Icon;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -17,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.concurrent.locks.LockSupport;
 
 public class PrioritiesSection extends Section {
@@ -29,6 +31,7 @@ public class PrioritiesSection extends Section {
     public PrioritiesSection() {
         super("Priorities", createContent());
         startTaskDurationUpdateTimer();
+        startCompletedTaskRemovalThread();
     }
 
     private static Pane createContent() {
@@ -89,6 +92,38 @@ public class PrioritiesSection extends Section {
                 }
             }
         });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void startCompletedTaskRemovalThread() {
+        final var tasksScheduledForRemoval = new ArrayList<EditableTask>();
+        Thread thread = new Thread(() -> {
+            while ((true)) {
+                // Remove current tasks scheduled for removal
+                for (EditableTask task : tasksScheduledForRemoval) {
+                    if (task.taskCompleted.isSelected()) {
+                        System.out.println("Removing task: " + task.taskField.getText());
+                        Platform.runLater(() -> prioritiesTaskList.remove(task));
+                    }
+                }
+                tasksScheduledForRemoval.clear();
+                sleepFor(Duration.ofSeconds(1)); // Wait for the UI to remove the task
+
+                // Schedule completed tasks for removal during next cycle
+                for (Node node : prioritiesTaskList) {
+                    if (node instanceof EditableTask task) {
+                        if (task.taskCompleted.isSelected()) {
+                            System.out.println("Scheduled for removal: " + task.taskField.getText());
+                            tasksScheduledForRemoval.add(task);
+                        }
+                    }
+                }
+
+                sleepFor(Duration.ofMinutes(5));
+            }
+        });
+
         thread.setDaemon(true);
         thread.start();
     }

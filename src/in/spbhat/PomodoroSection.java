@@ -50,7 +50,7 @@ public class PomodoroSection extends Section {
     }
 
     private static int longBreakInterval = 4;
-    private static final SimpleDoubleProperty soundLevel = new SimpleDoubleProperty(10);
+    private static final SimpleDoubleProperty soundLevel = new SimpleDoubleProperty(5);
     public static boolean pomodoroRunning = false;
     public static PomodoroState currentPomodoroState = null;
 
