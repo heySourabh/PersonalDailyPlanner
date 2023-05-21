@@ -1,5 +1,5 @@
-# background music folder
-sounds/
+# background music files
+*.mp3
 
 # plans folder
 plans/
