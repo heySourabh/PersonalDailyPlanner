@@ -27,6 +27,7 @@ public class EditableTask extends HBox {
 
     public SimpleObjectProperty<Duration> expectedDuration;
     public SimpleObjectProperty<Duration> actualDuration;
+    Tooltip tooltipClockFace;
 
     public enum EditableTaskStatus {
         INCOMPLETE, IN_PROCESS, COMPLETE
@@ -61,13 +62,40 @@ public class EditableTask extends HBox {
         Button timerBtn = new Button();
         timerBtn.setGraphic(clockFace);
         timerBtn.setOnAction(e -> editDurations());
-        timerBtn.setTooltip(new Tooltip("Edit expected time / actual time taken by this task"));
+        tooltipClockFace = new Tooltip();
+        tooltipClockFace.setShowDuration(javafx.util.Duration.seconds(20));
+        tooltipClockFace.setShowDelay(javafx.util.Duration.seconds(0.5));
+        expectedDuration.addListener((observable, oldValue, newValue) -> updateTooltipClockFace());
+        actualDuration.addListener((observable, oldValue, newValue) -> updateTooltipClockFace());
+        timerBtn.setTooltip(tooltipClockFace);
+        updateTooltipClockFace();
 
         getChildren().addAll(taskCompleted, taskField, timerBtn, removeTaskBtn);
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
         actualDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
+    }
+
+    private void updateTooltipClockFace() {
+        Platform.runLater(() -> tooltipClockFace.setText("Duration Expected: %s, Actual: %s"
+                .formatted(format(expectedDuration.get()), format(actualDuration.get()))));
+    }
+
+    private static String format(Duration duration) {
+        int hr = duration.toHoursPart();
+        int min = duration.toMinutesPart();
+        int sec = duration.toSecondsPart();
+        if (hr == 0 && min == 0) {
+            return "%02d sec".formatted(sec);
+        }
+        if (hr == 0 && sec == 0) {
+            return "%02d min".formatted(min);
+        }
+        if (min == 0 && sec == 0) {
+            return "%02d hr".formatted(hr);
+        }
+        return (hr != 0 ? "%02d:".formatted(hr) : "") + "%02d:%02d".formatted(min, sec);
     }
 
     private void taskCompleted() {
