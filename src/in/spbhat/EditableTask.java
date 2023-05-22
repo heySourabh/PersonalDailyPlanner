@@ -74,6 +74,7 @@ public class EditableTask extends HBox {
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
+        expectedDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
         actualDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
     }
 

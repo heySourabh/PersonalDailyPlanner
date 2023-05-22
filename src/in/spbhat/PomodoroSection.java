@@ -147,8 +147,9 @@ public class PomodoroSection extends Section {
                             stopBackgroundSound();
                             Platform.runLater(() -> {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setHeaderText("Beginning: " + pomodoroState);
-                                alert.setContentText("Time: " + format(pomodoroState.duration));
+                                alert.setTitle("Time for '%s'".formatted(pomodoroState));
+                                alert.setHeaderText("Begin: " + pomodoroState);
+                                alert.setContentText("Duration: " + format(pomodoroState.duration));
                                 alert.showAndWait();
                                 startBackgroundSound(pomodoroState);
                                 pomodoroRunning = true;
