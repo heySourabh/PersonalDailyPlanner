@@ -60,7 +60,9 @@ public class PomodoroSection extends Section {
     }
 
     private static Button startStopBtn;
+    private static Button fastForwardBtn;
     private static HBox indicatorsContent;
+    private static int millisPerSecond; // for early finish of pomodoro
 
     private static Pane createContent() {
         Indicator last = new Indicator(PomodoroState.LONG_BREAK);
@@ -71,6 +73,12 @@ public class PomodoroSection extends Section {
 
         Region emptySpace = new Region();
         HBox.setHgrow(emptySpace, Priority.ALWAYS);
+
+        fastForwardBtn = new Button("Finish Early");
+        fastForwardBtn.setGraphic(Icon.graphic("fast-forward.png", 20));
+        fastForwardBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        fastForwardBtn.setTooltip(new Tooltip("Finish Early"));
+        fastForwardBtn.setOnAction(e -> millisPerSecond = 4);
 
         startStopBtn = new Button("Start");
         stopPomodoro();
@@ -88,7 +96,7 @@ public class PomodoroSection extends Section {
         pomodoroSettings.setOnAction(e -> showPomodoroSettings());
         pomodoroSettings.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         pomodoroSettings.setTooltip(new Tooltip("Pomodoro Settings"));
-        HBox controlsContent = new HBox(startStopBtn, pomodoroSettings);
+        HBox controlsContent = new HBox(startStopBtn, fastForwardBtn, pomodoroSettings);
         controlsContent.setSpacing(5);
 
         HBox pomodoroContent = new HBox(indicatorsContent, emptySpace, controlsContent);
@@ -107,6 +115,7 @@ public class PomodoroSection extends Section {
         pomodoroRunning = false;
         stopBackgroundSound();
         startStopBtn.setGraphic(Icon.graphic("start.png", 20));
+        fastForwardBtn.setDisable(true);
         System.out.println("Stopping pomodoro");
     }
 
@@ -114,6 +123,7 @@ public class PomodoroSection extends Section {
         pomodoroRunning = true;
         startBackgroundSound(currentPomodoroState);
         startStopBtn.setGraphic(Icon.graphic("stop.png", 20));
+        fastForwardBtn.setDisable(false);
         System.out.println("Starting pomodoro");
     }
 
@@ -136,7 +146,7 @@ public class PomodoroSection extends Section {
                     currentPomodoroState = pomodoroState;
 
                     Indicator indicator = addPomodoroIndicator(pomodoroState);
-                    int millisPerSecond = 1000;
+                    millisPerSecond = 1000;
                     for (int seconds = 0; seconds < pomodoroState.duration.toSeconds(); seconds++) {
                         do {
                             indicator.setActive(pomodoroRunning);
