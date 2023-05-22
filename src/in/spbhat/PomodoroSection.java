@@ -136,10 +136,11 @@ public class PomodoroSection extends Section {
                     currentPomodoroState = pomodoroState;
 
                     Indicator indicator = addPomodoroIndicator(pomodoroState);
+                    int millisPerSecond = 1000;
                     for (int seconds = 0; seconds < pomodoroState.duration.toSeconds(); seconds++) {
                         do {
                             indicator.setActive(pomodoroRunning);
-                            sleepFor(Duration.ofSeconds(1));
+                            sleepFor(Duration.ofMillis(millisPerSecond));
                         } while (!pomodoroRunning);
 
                         if (seconds == 0) { // Show message about the Pomodoro state
