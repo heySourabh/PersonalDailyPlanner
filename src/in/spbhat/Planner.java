@@ -191,6 +191,7 @@ public class Planner extends Application {
                 fileWriter.println(task.taskField.getText());
                 fileWriter.println(task.expectedDuration.get().toMinutes());
                 fileWriter.println(task.actualDuration.get().toMinutes());
+                fileWriter.println(task.notes);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -249,9 +250,10 @@ public class Planner extends Application {
                     // ignore in case of parsing error
                     // thus enabling to read files from old version
                 }
+                String notes = fileScanner.nextLine();
                 PrioritiesSection.addEditableTask(
                         taskDescription, EditableTaskStatus.valueOf(status),
-                        expectedDurationMinutes, actualDurationMinutes);
+                        expectedDurationMinutes, actualDurationMinutes, notes);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -50,7 +50,9 @@ public class PrioritiesSection extends Section {
         addBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addBtn.setTooltip(new Tooltip("Add New Task"));
         addBtn.setOnAction(event ->
-                addEditableTask("", EditableTaskStatus.INCOMPLETE, defaultExpectedDurationMinutes, defaultActualDurationMinutes)
+                addEditableTask("", EditableTaskStatus.INCOMPLETE,
+                        defaultExpectedDurationMinutes, defaultActualDurationMinutes,
+                        "")
                         .requestFocus());
         prioritiesTaskList.add(addBtn);
         taskListPane.setTileAlignment(Pos.TOP_LEFT);
@@ -128,8 +130,10 @@ public class PrioritiesSection extends Section {
         thread.start();
     }
 
-    public static EditableTask addEditableTask(String description, EditableTaskStatus status, int expectedDurationMinutes, int actualDurationMinutes) {
-        EditableTask newTask = new EditableTask(taskListPane, description, status, expectedDurationMinutes, actualDurationMinutes);
+    public static EditableTask addEditableTask(String description, EditableTaskStatus status,
+                                               int expectedDurationMinutes, int actualDurationMinutes,
+                                               String notes) {
+        EditableTask newTask = new EditableTask(taskListPane, description, status, expectedDurationMinutes, actualDurationMinutes, notes);
         prioritiesTaskList.add(taskListPane.getChildren().size() - 1, newTask);
         return newTask;
     }

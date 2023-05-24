@@ -24,16 +24,18 @@ public class EditableTask extends HBox {
     private final Pane parent;
     public final TextField taskField;
     public final CheckBox taskCompleted;
+    public String notes;
 
     public SimpleObjectProperty<Duration> expectedDuration;
     public SimpleObjectProperty<Duration> actualDuration;
-    Tooltip tooltipClockFace;
+    private final Tooltip tooltipClockFace;
+
 
     public enum EditableTaskStatus {
         INCOMPLETE, IN_PROCESS, COMPLETE
     }
 
-    public EditableTask(Pane parent, String taskDescription, EditableTaskStatus status, int expectedDurationMinutes, int actualDurationMinutes) {
+    public EditableTask(Pane parent, String taskDescription, EditableTaskStatus status, int expectedDurationMinutes, int actualDurationMinutes, String notes) {
         this.parent = parent;
         taskCompleted = new CheckBox();
         taskCompleted.setSelected(status == EditableTaskStatus.COMPLETE);
@@ -51,12 +53,9 @@ public class EditableTask extends HBox {
         expectedDuration = new SimpleObjectProperty<>(Duration.ofMinutes(expectedDurationMinutes));
         actualDuration = new SimpleObjectProperty<>(Duration.ofMinutes(actualDurationMinutes));
 
-        HBox.setHgrow(taskField, Priority.ALWAYS);
+        this.notes = notes;
 
-        Button removeTaskBtn = new Button("Remove", Icon.graphic("remove.png", 20));
-        removeTaskBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        removeTaskBtn.setOnAction(event -> removeTask());
-        removeTaskBtn.setTooltip(new Tooltip("Remove this Task"));
+        HBox.setHgrow(taskField, Priority.ALWAYS);
 
         ClockFace clockFace = new ClockFace(20);
         Button timerBtn = new Button();
@@ -70,7 +69,17 @@ public class EditableTask extends HBox {
         timerBtn.setTooltip(tooltipClockFace);
         updateTooltipClockFace();
 
-        getChildren().addAll(taskCompleted, taskField, timerBtn, removeTaskBtn);
+        Button removeTaskBtn = new Button("Remove", Icon.graphic("remove.png", 20));
+        removeTaskBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        removeTaskBtn.setOnAction(event -> removeTask());
+        removeTaskBtn.setTooltip(new Tooltip("Remove this Task..."));
+
+        Button notesBtn = new Button("Notes", Icon.graphic("notes.png", 20));
+        notesBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        notesBtn.setOnAction(event -> showNotes());
+        notesBtn.setTooltip(new Tooltip("Show additional notes..."));
+
+        getChildren().addAll(taskCompleted, taskField, timerBtn, notesBtn, removeTaskBtn);
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
@@ -81,6 +90,27 @@ public class EditableTask extends HBox {
     private void updateTooltipClockFace() {
         Platform.runLater(() -> tooltipClockFace.setText("Duration Expected: %s, Actual: %s"
                 .formatted(format(expectedDuration.get()), format(actualDuration.get()))));
+    }
+
+    private void showNotes() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        DialogPane notesDialog = new DialogPane();
+        TextArea notesText = new TextArea(notes);
+        notesText.setPrefColumnCount(50);
+        notesText.setPrefRowCount(6);
+        notesText.setPadding(new Insets(0, 5, 0, 5));
+
+        notesDialog.setContent(notesText);
+        notesDialog.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
+        notesDialog.setHeaderText("Add Additional Notes:");
+        notesDialog.setGraphic(Icon.graphic("notes.png", 64));
+
+        alert.setDialogPane(notesDialog);
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == ButtonType.OK) {
+                notes = notesText.getText();
+            }
+        });
     }
 
     private static String format(Duration duration) {
