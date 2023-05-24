@@ -102,10 +102,11 @@ public class EditableTask extends HBox {
 
         notesDialog.setContent(notesText);
         notesDialog.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
-        notesDialog.setHeaderText("Add Additional Notes:");
+        notesDialog.setHeaderText("Notes for Task: '%s'".formatted(taskField.getText()));
         notesDialog.setGraphic(Icon.graphic("notes.png", 64));
 
         alert.setDialogPane(notesDialog);
+        alert.setTitle("Notes for '%s'".formatted(taskField.getText()));
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 notes = notesText.getText();
