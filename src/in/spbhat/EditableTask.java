@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -29,6 +30,7 @@ public class EditableTask extends HBox {
     public SimpleObjectProperty<Duration> expectedDuration;
     public SimpleObjectProperty<Duration> actualDuration;
     private final Tooltip tooltipClockFace;
+    private final Button notesBtn;
 
 
     public enum EditableTaskStatus {
@@ -74,9 +76,10 @@ public class EditableTask extends HBox {
         removeTaskBtn.setOnAction(event -> removeTask());
         removeTaskBtn.setTooltip(new Tooltip("Remove this Task..."));
 
-        Button notesBtn = new Button("Notes", Icon.graphic("notes.png", 20));
+        notesBtn = new Button("Notes", Icon.graphic("notes.png", 20));
         notesBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         notesBtn.setOnAction(event -> showNotes());
+        updateNotesBtn();
         notesBtn.setTooltip(new Tooltip("Show additional notes..."));
 
         getChildren().addAll(taskCompleted, taskField, timerBtn, notesBtn, removeTaskBtn);
@@ -85,6 +88,14 @@ public class EditableTask extends HBox {
 
         expectedDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
         actualDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
+    }
+
+    private void updateNotesBtn() {
+        if (notes.isBlank()) {
+            notesBtn.setEffect(new Glow(0.9));
+        } else {
+            notesBtn.setEffect(null);
+        }
     }
 
     private void updateTooltipClockFace() {
@@ -110,6 +121,7 @@ public class EditableTask extends HBox {
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 notes = notesText.getText();
+                updateNotesBtn();
             }
         });
     }
