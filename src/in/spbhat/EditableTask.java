@@ -12,7 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.*;
+import javafx.scene.effect.Glow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -108,15 +108,18 @@ public class EditableTask extends HBox {
         DialogPane notesDialog = new DialogPane();
         TextArea notesText = new TextArea(notes);
         notesText.setPrefColumnCount(50);
-        notesText.setPrefRowCount(6);
-        notesText.setPadding(new Insets(0, 5, 0, 5));
+        notesText.setPrefRowCount(10);
 
-        notesDialog.setContent(notesText);
+        VBox textAreaBox = new VBox(notesText);
+        VBox.setVgrow(notesText, Priority.ALWAYS);
+
+        notesDialog.setContent(textAreaBox);
         notesDialog.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
         notesDialog.setHeaderText("Notes for Task: '%s'".formatted(taskField.getText()));
         notesDialog.setGraphic(Icon.graphic("notes.png", 64));
 
         alert.setDialogPane(notesDialog);
+        alert.setResizable(true);
         alert.setTitle("Notes for '%s'".formatted(taskField.getText()));
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType == ButtonType.OK) {
