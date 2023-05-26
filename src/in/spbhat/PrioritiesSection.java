@@ -36,10 +36,10 @@ public class PrioritiesSection extends Section {
 
     private static Pane createContent() {
         Label headingLabel = new Label(
-                "The main things I must complete today, no matter what.");
+                "Things I must complete to move my projects forward.");
         headingLabel.setFont(Section.labelFont);
         Label noteLabel = new Label(
-                "List of priorities and to-dos that must be accomplished today " +
+                "List of priorities and to-dos that must be accomplished " +
                         "and DO these before getting trapped in other people's agendas.");
         noteLabel.setFont(Section.notesFont);
         noteLabel.setTextFill(Color.GRAY);
