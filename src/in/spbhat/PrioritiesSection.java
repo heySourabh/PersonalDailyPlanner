@@ -124,7 +124,7 @@ public class PrioritiesSection extends Section {
                                 taskDuration.toHoursPart(),
                                 taskDuration.toMinutesPart(),
                                 taskDuration.toSecondsPart())
-                                + "\n  Notes:\n" + task.notes.indent(4);
+                                + (task.notes.isBlank() ? "" : "\n  Notes:\n" + task.notes.indent(4));
                         System.out.println("Logging:\n  " + logMessage);
                         try (var taskCompletionLogWriter = new FileWriter(taskCompletionLogFile, true);
                              var logWriter = new PrintWriter(taskCompletionLogWriter)) {
