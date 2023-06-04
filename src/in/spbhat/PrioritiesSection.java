@@ -17,7 +17,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.locks.LockSupport;
 
@@ -27,6 +32,8 @@ public class PrioritiesSection extends Section {
 
     static final int defaultExpectedDurationMinutes = 30;
     static final int defaultActualDurationMinutes = 0;
+
+    File taskCompletionLogFile = new File("plans", Planner.todayDateString + ".log");
 
     public PrioritiesSection() {
         super("Priorities", createContent());
@@ -102,11 +109,28 @@ public class PrioritiesSection extends Section {
         final var tasksScheduledForRemoval = new ArrayList<EditableTask>();
         Thread thread = new Thread(() -> {
             while ((true)) {
-                // Remove current tasks scheduled for removal
+                // Remove current tasks scheduled for removal and write task to log file
                 for (EditableTask task : tasksScheduledForRemoval) {
                     if (task.taskCompleted.isSelected()) {
                         System.out.println("Removing task: " + task.taskField.getText());
                         Platform.runLater(() -> prioritiesTaskList.remove(task));
+
+                        // write task to log file
+                        Duration taskDuration = task.actualDuration.get();
+                        String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                                + " : Completed '" + task.taskField.getText() + "'"
+                                + " in "
+                                + "%02dh:%02dm:%02ds".formatted(
+                                taskDuration.toHoursPart(),
+                                taskDuration.toMinutesPart(),
+                                taskDuration.toSecondsPart())
+                                + "\n  Notes:\n" + task.notes.indent(4);
+                        System.out.println("Logging:\n  " + logMessage);
+                        try (var taskCompletionLogWriter = new FileWriter(taskCompletionLogFile, true);
+                             var logWriter = new PrintWriter(taskCompletionLogWriter)) {
+                            logWriter.println(logMessage);
+                        } catch (Exception ignore) {
+                        }
                     }
                 }
                 tasksScheduledForRemoval.clear();
@@ -122,7 +146,7 @@ public class PrioritiesSection extends Section {
                     }
                 }
 
-                sleepFor(Duration.ofMinutes(5));
+                sleepFor(Duration.ofMinutes(1));
             }
         });
 
