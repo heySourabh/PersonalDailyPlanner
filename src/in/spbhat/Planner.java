@@ -43,7 +43,7 @@ import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 public class Planner extends Application {
-    static final DateTimeFormatter dateFormatter = ofPattern("dd-MM-yyyy");
+    static final DateTimeFormatter dateFormatter = ofPattern("yyyy-MM-dd");
     static final LocalDateTime now = now();
     static final String todayDateString = now.format(dateFormatter);
     static Section pomodoroSection, projectsSection, peopleSection, prioritiesSection;
