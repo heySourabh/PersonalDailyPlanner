@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.locks.LockSupport;
+import java.util.stream.Collectors;
 
 public class PomodoroSection extends Section {
 
@@ -159,7 +160,16 @@ public class PomodoroSection extends Section {
                             Platform.runLater(() -> {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Time for '%s'".formatted(pomodoroState));
-                                alert.setHeaderText("Begin: " + pomodoroState);
+                                String activeTaskList;
+                                if (pomodoroState == PomodoroState.WORKING) {
+                                    activeTaskList = PrioritiesSection.prioritiesTaskList.stream()
+                                            .filter(node -> node instanceof EditableTask)
+                                            .map(task -> (EditableTask) task)
+                                            .filter(task -> task.taskCompleted.isIndeterminate())
+                                            .map(task -> "\n-" + task.taskField.getText())
+                                            .collect(Collectors.joining("")).indent(2);
+                                } else activeTaskList = "";
+                                alert.setHeaderText("Begin: " + pomodoroState + activeTaskList);
                                 alert.setContentText("Duration: " + format(pomodoroState.duration));
                                 alert.showAndWait();
                                 startBackgroundSound(pomodoroState);
