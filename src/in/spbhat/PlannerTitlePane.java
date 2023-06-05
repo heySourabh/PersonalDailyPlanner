@@ -6,12 +6,16 @@
 package in.spbhat;
 
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Objects;
 
 public class PlannerTitlePane extends VBox {
@@ -28,5 +32,19 @@ public class PlannerTitlePane extends VBox {
 
         getChildren().addAll(title);
         setAlignment(Pos.CENTER);
+
+        setOnMouseClicked((event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Task Log");
+            String logText = "";
+            try {
+                logText = Files.readString(new File("plans", Planner.todayDateString + ".log").toPath());
+            } catch (IOException ignore) {
+            }
+            alert.getDialogPane().setPrefWidth(800);
+            alert.setContentText(logText);
+            alert.setResizable(true);
+            alert.showAndWait();
+        }));
     }
 }
