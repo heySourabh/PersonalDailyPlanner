@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -94,10 +95,15 @@ public class Planner extends Application {
 
     private Parent createContent() {
         BorderPane root = new BorderPane();
-        Menu fileMenu = new Menu("File");
+        Menu fileMenu = new Menu("_File");
         MenuItem saveMenuItem = new MenuItem("_Save");
         saveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        fileMenu.getItems().add(saveMenuItem);
+
+        MenuItem showLogMenuItem = new MenuItem("Show _Log");
+        showLogMenuItem.setOnAction(event -> showLog());
+
+        fileMenu.getItems().addAll(saveMenuItem, showLogMenuItem);
+
         MenuBar menuBar = new MenuBar(fileMenu);
         menuBar.setUseSystemMenuBar(true);
 
@@ -129,6 +135,21 @@ public class Planner extends Application {
         loadPlanIfAvailable();
 
         return root;
+    }
+
+    public static void showLog() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Log of completed tasks");
+        alert.setHeaderText("Today's tasks saved after completion");
+        String logText = "Log file not found. Probably no task is completed so far.";
+        try {
+            logText = Files.readString(new File("plans", Planner.todayDateString + ".log").toPath());
+        } catch (IOException ignore) {
+        }
+        alert.getDialogPane().setPrefWidth(800);
+        alert.setContentText(logText);
+        alert.setResizable(true);
+        alert.showAndWait();
     }
 
     private void save(Node node, Event event) {
