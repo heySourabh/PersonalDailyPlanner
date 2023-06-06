@@ -22,6 +22,7 @@ import javafx.scene.shape.Circle;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.locks.LockSupport;
@@ -54,6 +55,9 @@ public class PomodoroSection extends Section {
     private static final SimpleDoubleProperty soundLevel = new SimpleDoubleProperty(5);
     public static boolean pomodoroRunning = false;
     public static PomodoroState currentPomodoroState = null;
+    private static final String sessionEndNotifySound = Objects.requireNonNull(
+            PomodoroSection.class.getResource("sounds/ring.mp3")).toString();
+    private static final MediaPlayer notificationPlayer = new MediaPlayer(new Media(sessionEndNotifySound));
 
     public PomodoroSection() {
         super("Pomodoro | Not Started Yet: 00:00:00", createContent());
@@ -79,7 +83,7 @@ public class PomodoroSection extends Section {
         fastForwardBtn.setGraphic(Icon.graphic("fast-forward.png", 20));
         fastForwardBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         fastForwardBtn.setTooltip(new Tooltip("Finish Early"));
-        fastForwardBtn.setOnAction(e -> millisPerSecond = 4);
+        fastForwardBtn.setOnAction(e -> millisPerSecond = 2);
 
         startStopBtn = new Button("Start");
         stopPomodoro();
@@ -181,6 +185,8 @@ public class PomodoroSection extends Section {
                         Platform.runLater(() -> super.titleText.setText("Pomodoro | %s: %s".formatted(pomodoroState, format(remainingSeconds))));
                     }
                     indicator.setActive(false);
+                    notificationPlayer.stop();
+                    notificationPlayer.play();
                 }
             }
         });
