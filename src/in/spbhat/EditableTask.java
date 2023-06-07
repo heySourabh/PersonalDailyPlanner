@@ -26,6 +26,7 @@ public class EditableTask extends HBox {
     public final TextField taskField;
     public final CheckBox taskCompleted;
     public String notes;
+    public int priority = PrioritiesSection.defaultPriority;
 
     public SimpleObjectProperty<Duration> expectedDuration;
     public SimpleObjectProperty<Duration> actualDuration;
@@ -62,7 +63,7 @@ public class EditableTask extends HBox {
         ClockFace clockFace = new ClockFace(20);
         Button timerBtn = new Button();
         timerBtn.setGraphic(clockFace);
-        timerBtn.setOnAction(e -> editDurations());
+        timerBtn.setOnAction(e -> editDurationAndPriority());
         tooltipClockFace = new Tooltip();
         tooltipClockFace.setShowDuration(javafx.util.Duration.seconds(20));
         tooltipClockFace.setShowDelay(javafx.util.Duration.seconds(0.5));
@@ -186,7 +187,7 @@ public class EditableTask extends HBox {
         });
     }
 
-    private void editDurations() {
+    private void editDurationAndPriority() {
         TextField expectedDurationField = new TextField();
         expectedDurationField.setPrefColumnCount(4);
         expectedDurationField.setText(String.valueOf(expectedDuration.get().toMinutes()));
@@ -195,11 +196,18 @@ public class EditableTask extends HBox {
         actualDurationField.setPrefColumnCount(4);
         actualDurationField.setText(String.valueOf(actualDuration.get().toMinutes()));
 
+        Spinner<Integer> prioritySpinner = new Spinner<>(1, 10, priority);
+        prioritySpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        prioritySpinner.getEditor().setPrefColumnCount(6);
+        prioritySpinner.getEditor().setAlignment(Pos.CENTER);
+
         HBox expectedDurationBox = new HBox(new Label("Expected:  "), expectedDurationField, new Label(" Minutes"));
         expectedDurationBox.setSpacing(5);
         HBox actualDurationBox = new HBox(new Label("Actual:       "), actualDurationField, new Label(" Minutes"));
         actualDurationBox.setSpacing(5);
-        VBox durationsBox = new VBox(expectedDurationBox, actualDurationBox);
+        HBox priorityBox = new HBox(new Label("Priority:       "), prioritySpinner);
+
+        VBox durationsBox = new VBox(expectedDurationBox, actualDurationBox, priorityBox);
         durationsBox.setSpacing(10);
         durationsBox.setPadding(new Insets(20));
 
@@ -221,6 +229,11 @@ public class EditableTask extends HBox {
                     if (expectedMinutes > 0 && actualMinutes >= 0) {
                         expectedDuration.set(Duration.ofMinutes(expectedMinutes));
                         actualDuration.set(Duration.ofMinutes(actualMinutes));
+                    }
+                    int newPriority = prioritySpinner.getValue();
+                    if (newPriority != this.priority) {
+                        this.priority = newPriority;
+                        PrioritiesSection.sortByPriority();
                     }
                 } catch (Exception ignore) {
                     //ignore in case of any error in parsing text to integer

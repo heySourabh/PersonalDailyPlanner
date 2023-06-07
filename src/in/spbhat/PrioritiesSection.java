@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.locks.LockSupport;
 
 public class PrioritiesSection extends Section {
@@ -32,6 +33,7 @@ public class PrioritiesSection extends Section {
 
     static final int defaultExpectedDurationMinutes = 30;
     static final int defaultActualDurationMinutes = 0;
+    static final int defaultPriority = 5;
 
     public PrioritiesSection() {
         super("Priorities", createContent());
@@ -164,5 +166,13 @@ public class PrioritiesSection extends Section {
         EditableTask newTask = new EditableTask(taskListPane, description, status, expectedDurationMinutes, actualDurationMinutes, notes);
         prioritiesTaskList.add(taskListPane.getChildren().size() - 1, newTask);
         return newTask;
+    }
+
+    public static void sortByPriority() {
+        Comparator<Node> comparator = Comparator.comparing(node -> {
+            if (node instanceof EditableTask task) return task.priority;
+            else return 10;
+        });
+        prioritiesTaskList.setAll(prioritiesTaskList.sorted(comparator));
     }
 }
