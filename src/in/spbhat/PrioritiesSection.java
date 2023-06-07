@@ -33,8 +33,6 @@ public class PrioritiesSection extends Section {
     static final int defaultExpectedDurationMinutes = 30;
     static final int defaultActualDurationMinutes = 0;
 
-    File taskCompletionLogFile = new File("plans", Planner.todayDateString + ".log");
-
     public PrioritiesSection() {
         super("Priorities", createContent());
         startTaskDurationUpdateTimer();
@@ -114,23 +112,7 @@ public class PrioritiesSection extends Section {
                     if (task.taskCompleted.isSelected()) {
                         System.out.println("Removing task: " + task.taskField.getText());
                         Platform.runLater(() -> prioritiesTaskList.remove(task));
-
-                        // write task to log file
-                        Duration taskDuration = task.actualDuration.get();
-                        String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                                + " : Completed '" + task.taskField.getText() + "'"
-                                + " in "
-                                + "%02dh:%02dm:%02ds".formatted(
-                                taskDuration.toHoursPart(),
-                                taskDuration.toMinutesPart(),
-                                taskDuration.toSecondsPart())
-                                + (task.notes.isBlank() ? "" : "\n  Notes:\n" + task.notes.indent(4));
-                        System.out.println("Logging:\n  " + logMessage);
-                        try (var taskCompletionLogWriter = new FileWriter(taskCompletionLogFile, true);
-                             var logWriter = new PrintWriter(taskCompletionLogWriter)) {
-                            logWriter.println(logMessage);
-                        } catch (Exception ignore) {
-                        }
+                        writeToLogFile(task);
                     }
                 }
                 tasksScheduledForRemoval.clear();
@@ -152,6 +134,25 @@ public class PrioritiesSection extends Section {
 
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private void writeToLogFile(EditableTask task) {
+        Duration taskDuration = task.actualDuration.get();
+        String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                + " : Completed '" + task.taskField.getText() + "'"
+                + " in "
+                + "%02dh:%02dm:%02ds".formatted(
+                taskDuration.toHoursPart(),
+                taskDuration.toMinutesPart(),
+                taskDuration.toSecondsPart())
+                + (task.notes.isBlank() ? "" : "\n  Notes:\n" + task.notes.indent(4));
+        System.out.println("Logging:\n  " + logMessage);
+        File taskCompletionLogFile = new File("plans", Planner.todayDateString + ".log");
+        try (var taskCompletionLogWriter = new FileWriter(taskCompletionLogFile, true);
+             var logWriter = new PrintWriter(taskCompletionLogWriter)) {
+            logWriter.println(logMessage);
+        } catch (Exception ignore) {
+        }
     }
 
     public static EditableTask addEditableTask(String description, EditableTaskStatus status,
