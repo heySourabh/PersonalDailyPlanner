@@ -180,6 +180,7 @@ public class EditableTask extends HBox {
         dialog.setHeaderText("Confirm Delete?");
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.equals(ButtonType.OK)) {
+                PrioritiesSection.writeToLogFile(this);
                 parent.getChildren().remove(this);
             }
         });

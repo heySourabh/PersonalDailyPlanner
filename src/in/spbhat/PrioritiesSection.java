@@ -136,7 +136,10 @@ public class PrioritiesSection extends Section {
         thread.start();
     }
 
-    private void writeToLogFile(EditableTask task) {
+    public static void writeToLogFile(EditableTask task) {
+        if (!task.taskCompleted.isSelected()) { // write only if completed
+            return;
+        }
         Duration taskDuration = task.actualDuration.get();
         String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                 + " : Completed '" + task.taskField.getText() + "'"
