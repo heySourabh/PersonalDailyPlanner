@@ -323,10 +323,16 @@ public class PomodoroSection extends Section {
             setOnMouseExited(e -> tooltip.hide());
             timer = new AnimationTimer() {
                 double time = 0.0;
+                long prev = -1;
 
                 @Override
                 public void handle(long now) {
-                    time += 1.0 / 30;
+                    if (prev < 0) {
+                        prev = now;
+                        return;
+                    }
+                    time += 2.0 * 1e-9 * (now - prev);
+                    prev = now;
                     double f = Math.sin(time);
                     setOpacity(f * f);
                 }
