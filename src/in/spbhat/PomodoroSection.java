@@ -331,9 +331,13 @@ public class PomodoroSection extends Section {
                         prev = now;
                         return;
                     }
-                    time += 2.0 * 1e-9 * (now - prev);
+                    double secs = 1e-9 * (now - prev);
+                    if (secs < 0.1) {
+                        return;
+                    }
+                    time += secs;
                     prev = now;
-                    double f = Math.sin(time);
+                    double f = Math.sin(2 * time % (2 * Math.PI));
                     setOpacity(f * f);
                 }
             };
