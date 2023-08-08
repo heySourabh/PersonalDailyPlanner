@@ -26,6 +26,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -104,7 +105,14 @@ public class Planner extends Application {
 
         fileMenu.getItems().addAll(saveMenuItem, showLogMenuItem);
 
-        MenuBar menuBar = new MenuBar(fileMenu);
+        Menu helpMenu = new Menu("_Help");
+        MenuItem aboutMenuItem = new MenuItem("_About");
+        aboutMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
+        aboutMenuItem.setOnAction(event -> showAboutInfo());
+
+        helpMenu.getItems().add(aboutMenuItem);
+
+        MenuBar menuBar = new MenuBar(fileMenu, helpMenu);
         menuBar.setUseSystemMenuBar(true);
 
         PlannerTitlePane titlePane = new PlannerTitlePane();
@@ -135,6 +143,30 @@ public class Planner extends Application {
         loadPlanIfAvailable();
 
         return root;
+    }
+
+    private void showAboutInfo() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("About Productivity Planner");
+        String contentHTML = """
+                <html>
+                This planner can help you to plan your day effectively and get work done.<br>
+                It also incorporates a Pomodoro timer to assist in taking timely breaks between work sessions.<br>
+                <br>
+                Programmed by: <strong>Sourabh Bhat</strong><br>
+                Provide feedback at: <a href="#">heySourabh@gmail.com</a><br>
+                Website: <a href="#">https://spbhat.in</a><br>
+                </html>
+                """;
+        WebView content = new WebView();
+        content.getEngine().loadContent(contentHTML);
+        content.setContextMenuEnabled(false);
+        alert.getDialogPane().setContent(content);
+        alert.getDialogPane().setPrefWidth(800);
+        alert.getDialogPane().setPrefHeight(300);
+        alert.setResizable(true);
+        alert.showAndWait();
     }
 
     public static void showLog() {
