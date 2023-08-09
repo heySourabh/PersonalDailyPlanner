@@ -45,8 +45,8 @@ public class EditableTask extends HBox {
         taskCompleted.setAllowIndeterminate(true);
         taskCompleted.setIndeterminate(status == EditableTaskStatus.IN_PROCESS);
         taskCompleted.setOnAction(event -> taskCompleted());
-        Tooltip taskTooltip = new Tooltip("In progress (Green) / Complete (Gray)");
-        taskCompleted.setTooltip(taskTooltip);
+        Tooltip statusTooltip = new Tooltip("In process (Green) / Complete (Gray)");
+        taskCompleted.setTooltip(statusTooltip);
 
         taskField = new TextField(taskDescription);
         styleTextField();
@@ -54,6 +54,8 @@ public class EditableTask extends HBox {
         taskField.setPromptText("Task description");
         taskField.setPrefColumnCount(22);
         taskField.setPadding(Insets.EMPTY);
+        Tooltip taskTooltip = new Tooltip();
+        taskTooltip.setOnShowing(event -> taskTooltip.setText(taskField.getText()));
         taskField.setTooltip(taskTooltip);
 
         expectedDuration = new SimpleObjectProperty<>(Duration.ofMinutes(expectedDurationMinutes));
