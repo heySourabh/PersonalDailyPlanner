@@ -151,12 +151,30 @@ public class Planner extends Application {
         alert.setHeaderText("About Productivity Planner");
         String contentHTML = """
                 <html>
-                This planner can help you to plan your day effectively and get work done.<br>
-                It also incorporates a Pomodoro timer to assist in taking timely breaks between work sessions.<br>
-                <br>
-                Programmed by: <strong>Sourabh Bhat</strong><br>
-                Provide feedback at: <a href="#">heySourabh@gmail.com</a><br>
-                Website: <a href="#">https://spbhat.in</a><br>
+                    This planner can help you to plan your day effectively and get work done.<br>
+                    Some of the features:
+                    <ul>
+                        <li> Incorporates a Pomodoro timer to assist in taking timely breaks between work sessions.
+                        <li> Tasks in the Priorities section can have three states.
+                        <ol>
+                            <li> Incomplete (White)
+                            <li> In-process (Green), and
+                            <li> Completed (Gray).
+                        </ol>
+                        <li> Time of 'In-process tasks' is recorded during pomodoro working sessions.
+                        <li> Completed tasks are saved in log file for the day, which can be accessed from File menu
+                             or by clicking on the title section.
+                        <li> Completed tasks are automatically removed after a short time delay.
+                        <li> Every task can have additional notes for planning,
+                             which is also saved in the log file after task completion.
+                    </ul>
+                    
+                    If you find any bugs, or suggestions, please do not hesitate to report the same.
+                    
+                    <br>
+                    Programmed by: <strong>Sourabh Bhat</strong><br>
+                    Provide feedback at: <a href="#">heySourabh@gmail.com</a><br>
+                    Website: <a href="#">https://spbhat.in</a><br>
                 </html>
                 """;
         WebView content = new WebView();
@@ -164,7 +182,7 @@ public class Planner extends Application {
         content.setContextMenuEnabled(false);
         alert.getDialogPane().setContent(content);
         alert.getDialogPane().setPrefWidth(800);
-        alert.getDialogPane().setPrefHeight(300);
+        alert.getDialogPane().setPrefHeight(500);
         alert.setResizable(true);
         alert.showAndWait();
     }
