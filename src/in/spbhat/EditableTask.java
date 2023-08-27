@@ -120,6 +120,7 @@ public class EditableTask extends HBox {
         VBox.setVgrow(notesText, Priority.ALWAYS);
 
         notesDialog.setContent(textAreaBox);
+        notesDialog.setMaxWidth(1000);
         notesDialog.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
         notesDialog.setHeaderText("Notes for Task: '%s'".formatted(taskField.getText()));
         notesDialog.setGraphic(Icon.graphic("notes.png", 64));
