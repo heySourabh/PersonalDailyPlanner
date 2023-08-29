@@ -204,11 +204,17 @@ public class Planner extends Application {
 
     private void save(Node node, Event event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.getButtonTypes().addAll(ButtonType.NO);
+        ButtonType[] buttons = {
+                new ButtonType("Don't Save", ButtonBar.ButtonData.NO),
+                ButtonType.CANCEL,
+                new ButtonType("Save", ButtonBar.ButtonData.OK_DONE)
+        };
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(buttons);
         alert.setHeaderText("Save image and data?");
         alert.setContentText("");
         alert.showAndWait().ifPresent(buttonType -> {
-            if (buttonType.equals(ButtonType.OK)) {
+            if (buttonType.getButtonData().equals(ButtonBar.ButtonData.OK_DONE)) {
                 saveImageAndData(node);
             }
             if (buttonType.equals(ButtonType.CANCEL)) {
