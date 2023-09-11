@@ -169,12 +169,12 @@ public class Planner extends Application {
                              which is also saved in the log file after task completion.
                     </ul>
                     
-                    If you find any bugs, or suggestions, please do not hesitate to report the same.
+                    If you find any bugs, or have suggestions, please do not hesitate to report the same.
                     
                     <br>
                     Programmed by: <strong>Sourabh Bhat</strong><br>
-                    Provide feedback at: <a href="#">heySourabh@gmail.com</a><br>
-                    Website: <a href="#">https://spbhat.in</a><br>
+                    Provide feedback at: <a style="text-decoration:none" href="#">heySourabh@gmail.com</a><br>
+                    Website: <a style="text-decoration:none" href="#">https://spbhat.in</a><br>
                 </html>
                 """;
         WebView content = new WebView();
