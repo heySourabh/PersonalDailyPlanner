@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -43,6 +44,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class Planner extends Application {
     static final DateTimeFormatter dateFormatter = ofPattern("yyyy-MM-dd");
@@ -73,18 +75,13 @@ public class Planner extends Application {
         stage.show();
     }
 
-    private final static int REMINDER_MINUTES = 30;
-
     private void moveToFrontIntermittently() {
-        final Thread thread = new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             while (true) {
-                long waitNanos = REMINDER_MINUTES * 60 * 1_000_000_000L;
-                LockSupport.parkNanos(waitNanos);
+                sleepFor(Duration.of(30, MINUTES));
                 movePrimaryStageToFront();
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     public static void movePrimaryStageToFront() {
@@ -335,6 +332,10 @@ public class Planner extends Application {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sleepFor(Duration duration) {
+        LockSupport.parkNanos(duration.toNanos());
     }
 
     private static final String newlineReplacement = "{newline}";

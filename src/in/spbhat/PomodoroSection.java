@@ -25,8 +25,9 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Collectors;
+
+import static in.spbhat.Planner.sleepFor;
 
 public class PomodoroSection extends Section {
 
@@ -137,7 +138,7 @@ public class PomodoroSection extends Section {
     private void startRunningPomodoroThread() {
         if (pomodoroThreadStarted) return;
         pomodoroThreadStarted = true;
-        Thread pomodoroThread = new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             for (int pomodoroNumber = 0; true; pomodoroNumber++) {
                 for (int state = 0; state < 2; state++) {
                     PomodoroState pomodoroState;
@@ -190,13 +191,6 @@ public class PomodoroSection extends Section {
                 }
             }
         });
-
-        pomodoroThread.setDaemon(true);
-        pomodoroThread.start();
-    }
-
-    private static void sleepFor(Duration duration) {
-        LockSupport.parkNanos(duration.toNanos());
     }
 
     private static String format(Duration duration) {

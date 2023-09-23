@@ -25,7 +25,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.concurrent.locks.LockSupport;
+
+import static in.spbhat.Planner.sleepFor;
 
 public class PrioritiesSection extends Section {
     public static ObservableList<Node> prioritiesTaskList;
@@ -80,14 +81,9 @@ public class PrioritiesSection extends Section {
         return content;
     }
 
-
-    private void sleepFor(Duration duration) {
-        LockSupport.parkNanos(duration.toNanos());
-    }
-
     private void startTaskDurationUpdateTimer() {
         Duration durationBetweenUpdates = Duration.ofSeconds(5);
-        Thread thread = new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             while (true) {
                 do {
                     sleepFor(durationBetweenUpdates);
@@ -101,13 +97,11 @@ public class PrioritiesSection extends Section {
                 }
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private void startCompletedTaskRemovalThread() {
         final var tasksScheduledForRemoval = new ArrayList<EditableTask>();
-        Thread thread = new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             while ((true)) {
                 // Remove current tasks scheduled for removal and write task to log file
                 for (EditableTask task : tasksScheduledForRemoval) {
@@ -133,9 +127,6 @@ public class PrioritiesSection extends Section {
                 sleepFor(Duration.ofMinutes(1));
             }
         });
-
-        thread.setDaemon(true);
-        thread.start();
     }
 
     public static void writeToLogFile(EditableTask task) {
