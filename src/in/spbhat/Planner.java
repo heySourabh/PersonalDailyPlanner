@@ -26,6 +26,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
@@ -210,6 +212,7 @@ public class Planner extends Application {
         alert.getButtonTypes().addAll(buttons);
         alert.setHeaderText("Save image and data?");
         alert.setContentText("");
+        playNotificationSound();
         alert.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getButtonData().equals(ButtonBar.ButtonData.OK_DONE)) {
                 saveImageAndData(node);
@@ -336,6 +339,14 @@ public class Planner extends Application {
 
     public static void sleepFor(Duration duration) {
         LockSupport.parkNanos(duration.toNanos());
+    }
+
+    private static final MediaPlayer notificationPlayer = new MediaPlayer(new Media(Objects.requireNonNull(
+            PomodoroSection.class.getResource("sounds/dialog-question.mp3")).toString()));
+
+    public static void playNotificationSound() {
+        notificationPlayer.setOnEndOfMedia(notificationPlayer::stop);
+        notificationPlayer.play();
     }
 
     private static final String newlineReplacement = "{newline}";
