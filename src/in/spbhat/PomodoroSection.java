@@ -32,9 +32,9 @@ import static in.spbhat.Planner.sleepFor;
 public class PomodoroSection extends Section {
 
     public enum PomodoroState {
-        WORKING(Duration.ofMinutes(25), Color.GREENYELLOW, "Working"),
-        SHORT_BREAK(Duration.ofMinutes(5), Color.DEEPSKYBLUE, "Short Break"),
-        LONG_BREAK(Duration.ofMinutes(10), Color.DEEPPINK, "Long Break");
+        WORKING(Duration.ofMinutes(50), Color.GREENYELLOW, "Working"),
+        SHORT_BREAK(Duration.ofMinutes(10), Color.DEEPSKYBLUE, "Short Break"),
+        LONG_BREAK(Duration.ofMinutes(20), Color.DEEPPINK, "Long Break");
 
         private Duration duration;
         private final Color color;
