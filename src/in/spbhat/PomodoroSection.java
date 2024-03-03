@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023.
+ * Copyright (c) 2023-2024.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -61,7 +61,7 @@ public class PomodoroSection extends Section {
     private static final MediaPlayer notificationPlayer = new MediaPlayer(new Media(sessionEndNotifySound));
 
     public PomodoroSection() {
-        super("Pomodoro | Not Started Yet: 00:00:00", createContent());
+        super("Pomodoro | Not Started Yet: 00:00:00", createContent(), false);
         startRunningPomodoroThread();
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.
+ * Copyright (c) 2020-2024.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -26,7 +26,7 @@ public class ProjectSection extends Section {
     public static List<ProjectDataProperty> projectDataProperties;
 
     public ProjectSection() {
-        super("Projects", createContent());
+        super("Projects", createContent(), true);
     }
 
     private static Pane createContent() {
@@ -68,7 +68,7 @@ public class ProjectSection extends Section {
 
         VBox tasks = new VBox();
         for (int num = 1; num <= ProjectDataProperty.NUM_PROJECT_TASKS; num++) {
-            Label numLabel = new Label("" + num + ". ");
+            Label numLabel = new Label(num + ". ");
             numLabel.setFont(Section.labelFont);
             TextField taskDetail = new TextField();
             projectDataProperty.projectTasks.get(num - 1)

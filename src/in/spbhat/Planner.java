@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021.
+ * Copyright (c) 2021-2024.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -130,9 +130,6 @@ public class Planner extends Application {
                 new Separator(), projectsSection,
                 new Separator(), peopleSection,
                 new Separator(), prioritiesSection);
-        VBox.setVgrow(projectsSection, Priority.ALWAYS);
-        VBox.setVgrow(peopleSection, Priority.ALWAYS);
-        VBox.setVgrow(prioritiesSection, Priority.ALWAYS);
 
         sections.setAlignment(Pos.TOP_CENTER);
         sections.setPadding(new Insets(0, 10, 10, 10));

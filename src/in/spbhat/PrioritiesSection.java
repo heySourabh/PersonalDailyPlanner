@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.
+ * Copyright (c) 2020-2024.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -37,7 +37,7 @@ public class PrioritiesSection extends Section {
     static final int defaultPriority = 5;
 
     public PrioritiesSection() {
-        super("Priorities", createContent());
+        super("Priorities", createContent(), true);
         startTaskDurationUpdateTimer();
         startCompletedTaskRemovalThread();
     }

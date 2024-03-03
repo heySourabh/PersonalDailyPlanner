@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.
+ * Copyright (c) 2020-2024.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -17,7 +17,7 @@ public class PeopleSection extends Section {
     public final static SimpleStringProperty peopleWaitingOnProperty = new SimpleStringProperty();
 
     public PeopleSection() {
-        super("People", createContent());
+        super("People", createContent(), true);
     }
 
     private static Pane createContent() {
