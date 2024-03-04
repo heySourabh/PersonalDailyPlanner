@@ -16,3 +16,7 @@ will allow to run directly from the source.
 
 Help dialog:
 ![Help dialog](help_dialog.png)
+
+Collapsable sections, so that the details can be 
+**hidden away to avoid distraction**:
+![Collapsable sections](screen_capture.gif)
