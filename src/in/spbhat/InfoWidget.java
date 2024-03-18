@@ -12,7 +12,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.effect.Glow;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -55,7 +55,7 @@ public class InfoWidget extends Stage {
         timer.textProperty().bind(PomodoroSection.titleTextLabel.textProperty());
         VBox root = new VBox(timer, inProcessTasksView);
         root.setPadding(new Insets(5));
-        Color bgColor = Color.color(0.9, 1.0, 0.9, 0.75);
+        Color bgColor = Color.color(0.9, 1.0, 0.9, 0.3);
         root.setBackground(new Background(new BackgroundFill(
                 bgColor,
                 new CornerRadii(10),
@@ -65,7 +65,7 @@ public class InfoWidget extends Stage {
                 BorderStrokeStyle.SOLID,
                 new CornerRadii(10),
                 BorderStroke.MEDIUM)));
-        root.setEffect(new Glow());
+        root.setEffect(new DropShadow(5, Color.WHITE));
         return root;
     }
 
