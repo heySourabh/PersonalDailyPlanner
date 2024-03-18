@@ -56,12 +56,14 @@ public class PomodoroSection extends Section {
     private static final SimpleDoubleProperty soundLevel = new SimpleDoubleProperty(5);
     public static boolean pomodoroRunning = false;
     public static PomodoroState currentPomodoroState = null;
+    public static Label titleTextLabel;
     private static final String sessionEndNotifySound = Objects.requireNonNull(
             PomodoroSection.class.getResource("sounds/ring.mp3")).toString();
     private static final MediaPlayer notificationPlayer = new MediaPlayer(new Media(sessionEndNotifySound));
 
     public PomodoroSection() {
         super("Pomodoro | Not Started Yet: 00:00:00", createContent(), false);
+        titleTextLabel = super.titleText;
         startRunningPomodoroThread();
     }
 

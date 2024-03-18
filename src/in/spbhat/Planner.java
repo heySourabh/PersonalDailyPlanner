@@ -54,6 +54,7 @@ public class Planner extends Application {
     static final String todayDateString = now.format(dateFormatter);
     static Section pomodoroSection, projectsSection, peopleSection, prioritiesSection;
     static VBox sections;
+    private InfoWidget infoWidget;
 
     public static void main(String[] args) {
         launch(args);
@@ -75,13 +76,19 @@ public class Planner extends Application {
         stage.setOnCloseRequest(event -> save(sections, event));
         moveToFrontIntermittently();
         stage.show();
+
+        // Floating InfoWidget
+        infoWidget = new InfoWidget(primaryStage);
+        infoWidget.show();
     }
 
     private void moveToFrontIntermittently() {
         Thread.startVirtualThread(() -> {
             while (true) {
                 sleepFor(Duration.of(30, MINUTES));
-                movePrimaryStageToFront();
+                if (!infoWidget.isShowing()) {
+                    movePrimaryStageToFront();
+                }
             }
         });
     }
