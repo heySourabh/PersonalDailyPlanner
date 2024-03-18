@@ -37,6 +37,7 @@ public class InfoWidget extends Stage {
         Scene scene = new Scene(root, Color.TRANSPARENT);
         scene.setCursor(Cursor.OPEN_HAND);
         scene.setOnMousePressed(this::mousePressed);
+        scene.setOnMouseReleased(this::mouseReleased);
         scene.setOnMouseDragged(this::mouseDragged);
 
         super.setScene(scene);
@@ -72,6 +73,7 @@ public class InfoWidget extends Stage {
     private double stageX, stageY;
 
     private void mousePressed(MouseEvent event) {
+        ((Scene) event.getSource()).setCursor(Cursor.CLOSED_HAND);
         mouseX = event.getScreenX();
         mouseY = event.getScreenY();
         stageX = this.getX();
@@ -83,6 +85,10 @@ public class InfoWidget extends Stage {
         double dy = event.getScreenY() - mouseY;
         this.setX(stageX + dx);
         this.setY(stageY + dy);
+    }
+
+    private void mouseReleased(MouseEvent event) {
+        ((Scene) event.getSource()).setCursor(Cursor.OPEN_HAND);
     }
 
     private void updateInProcessTasksThread() {
