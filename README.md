@@ -20,3 +20,9 @@ Help dialog:
 Collapsable sections, so that the details can be 
 **hidden away to avoid distraction**:
 ![Collapsable sections](screen_capture.gif)
+
+Floating widget, useful as reminder for currently in-process tasks:
+
+![Floating Widget](Planner_floating_widget.gif)
+
+The widget can be placed anywhere on the screen with the main planner window minimized.
