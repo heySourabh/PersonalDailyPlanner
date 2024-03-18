@@ -54,7 +54,7 @@ public class InfoWidget extends Stage {
         timer.textProperty().bind(PomodoroSection.titleTextLabel.textProperty());
         VBox root = new VBox(timer, inProcessTasksView);
         root.setPadding(new Insets(5));
-        Color bgColor = Color.color(0.1, 0.8, 0.22, 0.3);
+        Color bgColor = Color.color(0.9, 1.0, 0.9, 0.75);
         root.setBackground(new Background(new BackgroundFill(
                 bgColor,
                 new CornerRadii(10),
