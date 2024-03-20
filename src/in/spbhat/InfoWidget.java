@@ -39,6 +39,7 @@ public class InfoWidget extends Stage {
         scene.setOnMousePressed(this::mousePressed);
         scene.setOnMouseReleased(this::mouseReleased);
         scene.setOnMouseDragged(this::mouseDragged);
+        scene.setOnMouseClicked(this::mouseClicked);
 
         super.setScene(scene);
         super.setResizable(false);
@@ -71,6 +72,7 @@ public class InfoWidget extends Stage {
 
     private double mouseX, mouseY;
     private double stageX, stageY;
+    private boolean mouseDragged;
 
     private void mousePressed(MouseEvent event) {
         ((Scene) event.getSource()).setCursor(Cursor.CLOSED_HAND);
@@ -78,6 +80,7 @@ public class InfoWidget extends Stage {
         mouseY = event.getScreenY();
         stageX = this.getX();
         stageY = this.getY();
+        mouseDragged = false;
     }
 
     private void mouseDragged(MouseEvent event) {
@@ -85,10 +88,17 @@ public class InfoWidget extends Stage {
         double dy = event.getScreenY() - mouseY;
         this.setX(stageX + dx);
         this.setY(stageY + dy);
+        mouseDragged = true;
     }
 
     private void mouseReleased(MouseEvent event) {
         ((Scene) event.getSource()).setCursor(Cursor.OPEN_HAND);
+    }
+
+    private void mouseClicked(MouseEvent event) {
+        if (!mouseDragged) {
+            Planner.movePrimaryStageToFront();
+        }
     }
 
     private void updateInProcessTasksThread() {
