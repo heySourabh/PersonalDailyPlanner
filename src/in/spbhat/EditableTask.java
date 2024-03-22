@@ -82,7 +82,7 @@ public class EditableTask extends HBox {
         removeTaskBtn.setOnAction(event -> removeTask());
         removeTaskBtn.setTooltip(new Tooltip("Remove this Task..."));
 
-        notesBtn = new Button("Notes", Icon.graphic("notes.png", 20));
+        notesBtn = new Button("Notes", Icon.graphic("notes_btn_icon.png", 20));
         notesBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         notesBtn.setOnAction(event -> showNotes());
         updateNotesBtn();
