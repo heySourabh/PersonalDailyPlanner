@@ -9,8 +9,8 @@ package in.spbhat;
 import in.spbhat.icons.Icon;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -18,13 +18,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.LockSupport;
 
 public class InfoWidget extends Stage {
     private final Stage primaryStage;
@@ -34,7 +34,7 @@ public class InfoWidget extends Stage {
     public InfoWidget(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
-        Parent root = createContent();
+        Pane root = createContent();
         Scene scene = new Scene(root, Color.TRANSPARENT);
         scene.setCursor(Cursor.OPEN_HAND);
         scene.setOnMousePressed(this::mousePressed);
@@ -49,10 +49,33 @@ public class InfoWidget extends Stage {
         super.initStyle(StageStyle.TRANSPARENT);
         super.getIcons().add(Icon.graphic("info_widget_icon_64.png", 64).getImage());
 
+        // position to the top-right corner of the primary screen
+        Thread.startVirtualThread(() -> {
+            // wait for some time for the widget to show, so that its dimensions are populated
+            do {
+                Planner.sleepFor(Duration.ofMillis(100));
+            } while (!isShowing());
+            // get primary screen
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            double widgetWidth = root.getWidth();
+            int horizontalPadding = 50;
+            int verticalPadding = 50;
+            moveWidgetToLocation(
+                    screenBounds.getMaxX() - widgetWidth - horizontalPadding,
+                    screenBounds.getMinY() + verticalPadding
+            );
+        });
         updateInProcessTasksThread();
     }
 
-    private Parent createContent() {
+    private void moveWidgetToLocation(double x, double y) {
+        Platform.runLater(() -> {
+            super.setX(x);
+            super.setY(y);
+        });
+    }
+
+    private Pane createContent() {
         Label timer = new Label();
         timer.setFont(Font.font(null, 20));
         timer.textProperty().bind(PomodoroSection.titleTextLabel.textProperty());
@@ -108,7 +131,7 @@ public class InfoWidget extends Stage {
             while (this.isShowing() && primaryStage.isShowing()) {
                 updateTaskView();
                 Platform.runLater(this::sizeToScene);
-                LockSupport.parkNanos(Duration.ofSeconds(5).toNanos());
+                Planner.sleepFor(Duration.ofSeconds(5));
             }
             Platform.runLater(this::close);
         });
