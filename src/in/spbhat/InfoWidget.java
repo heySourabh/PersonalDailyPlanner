@@ -6,6 +6,7 @@
 
 package in.spbhat;
 
+import in.spbhat.icons.Icon;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
@@ -46,6 +47,7 @@ public class InfoWidget extends Stage {
         super.setTitle("Pomodoro Info Widget");
         super.setAlwaysOnTop(true);
         super.initStyle(StageStyle.TRANSPARENT);
+        super.getIcons().add(Icon.graphic("info_widget_icon_64.png", 64).getImage());
 
         updateInProcessTasksThread();
     }
