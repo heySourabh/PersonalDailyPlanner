@@ -44,7 +44,7 @@ public class EditableTask extends HBox {
         taskCompleted.setSelected(status == EditableTaskStatus.COMPLETE);
         taskCompleted.setAllowIndeterminate(true);
         taskCompleted.setIndeterminate(status == EditableTaskStatus.IN_PROCESS);
-        taskCompleted.setOnAction(event -> taskCompleted());
+        taskCompleted.setOnAction(_ -> taskCompleted());
         Tooltip statusTooltip = new Tooltip("In process (Green) / Complete (Gray)");
         taskCompleted.setTooltip(statusTooltip);
 
@@ -55,7 +55,7 @@ public class EditableTask extends HBox {
         taskField.setPrefColumnCount(22);
         taskField.setPadding(Insets.EMPTY);
         Tooltip taskTooltip = new Tooltip();
-        taskTooltip.setOnShowing(event -> taskTooltip.setText(taskField.getText()));
+        taskTooltip.setOnShowing(_ -> taskTooltip.setText(taskField.getText()));
         taskField.setTooltip(taskTooltip);
 
         expectedDuration = new SimpleObjectProperty<>(Duration.ofMinutes(expectedDurationMinutes));
@@ -68,23 +68,23 @@ public class EditableTask extends HBox {
         ClockFace clockFace = new ClockFace(20);
         Button timerBtn = new Button();
         timerBtn.setGraphic(clockFace);
-        timerBtn.setOnAction(e -> editDurationAndPriority());
+        timerBtn.setOnAction(_ -> editDurationAndPriority());
         tooltipClockFace = new Tooltip();
         tooltipClockFace.setShowDuration(javafx.util.Duration.seconds(20));
         tooltipClockFace.setShowDelay(javafx.util.Duration.seconds(0.5));
-        expectedDuration.addListener((observable, oldValue, newValue) -> updateTooltipClockFace());
-        actualDuration.addListener((observable, oldValue, newValue) -> updateTooltipClockFace());
+        expectedDuration.addListener((_, _, _) -> updateTooltipClockFace());
+        actualDuration.addListener((_, _, _) -> updateTooltipClockFace());
         timerBtn.setTooltip(tooltipClockFace);
         updateTooltipClockFace();
 
         Button removeTaskBtn = new Button("Remove", Icon.graphic("remove.png", 20));
         removeTaskBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        removeTaskBtn.setOnAction(event -> removeTask());
+        removeTaskBtn.setOnAction(_ -> removeTask());
         removeTaskBtn.setTooltip(new Tooltip("Remove this Task..."));
 
         notesBtn = new Button("Notes", Icon.graphic("notes_btn_icon.png", 20));
         notesBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        notesBtn.setOnAction(event -> showNotes());
+        notesBtn.setOnAction(_ -> showNotes());
         updateNotesBtn();
         notesBtn.setTooltip(new Tooltip("Show additional notes..."));
 
@@ -92,8 +92,8 @@ public class EditableTask extends HBox {
         setSpacing(2);
         setAlignment(Pos.CENTER);
 
-        expectedDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
-        actualDuration.addListener((observable, oldValue, newValue) -> clockFace.update());
+        expectedDuration.addListener((_, _, _) -> clockFace.update());
+        actualDuration.addListener((_, _, _) -> clockFace.update());
     }
 
     private void updateNotesBtn() {
@@ -181,9 +181,16 @@ public class EditableTask extends HBox {
     }
 
     private void removeTask() {
+        // If task is blank no need to confirm
+        if (taskField.getText().isBlank()) {
+            parent.getChildren().remove(this);
+            return;
+        }
+
+        // Show confirmation dialog before removing the task
         Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
-        dialog.setContentText("Are you sure you want to delete the task?\n" + "\"" +
-                taskField.getText() + "\"");
+        dialog.setContentText("Are you sure you want to delete the task?\n" +
+                              "\"" + taskField.getText() + "\"");
         dialog.setHeaderText("Confirm Delete?");
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.equals(ButtonType.OK)) {

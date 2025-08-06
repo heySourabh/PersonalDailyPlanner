@@ -50,10 +50,10 @@ public class InfoWidget extends Stage {
         super.getIcons().add(Icon.graphic("info_widget_icon_64.png", 64).getImage());
 
         // position to the top-right corner of the primary screen
-        new Thread(() -> {
+        Thread.startVirtualThread(() -> {
             // wait for some time for the widget to show, so that its dimensions are populated
             do {
-                Planner.sleepFor(Duration.ofMillis(100));
+                Planner.sleepFor(Duration.ofMillis(500));
             } while (!isShowing());
             // get primary screen
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -64,7 +64,7 @@ public class InfoWidget extends Stage {
                     screenBounds.getMaxX() - widgetWidth - horizontalPadding,
                     screenBounds.getMinY() + verticalPadding
             );
-        }).start();
+        });
         updateInProcessTasksThread();
     }
 
@@ -156,9 +156,19 @@ public class InfoWidget extends Stage {
             inProcessTasksView.getChildren().clear();
             inProcessTasksView.getChildren().addAll(
                     inProcessTasks.stream()
-                            .map(task -> new Label(" ➤ " + task))
+                            .map(task -> new Label(" ➤ " + limitTo50Chars(task)))
                             .toList());
             sizeToScene();
         });
+    }
+
+    private String limitTo50Chars(String str) {
+        int numChars = 50;
+        if (str.length() <= numChars) {
+            return str;
+        } else {
+            String append = "...";
+            return str.substring(0, numChars - append.length()) + append;
+        }
     }
 }
