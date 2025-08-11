@@ -50,9 +50,10 @@ public class InfoWidget extends Stage {
         super.getIcons().add(Icon.graphic("info_widget_icon_64.png", 64).getImage());
 
         // position to the top-right corner of the primary screen
-        Thread.startVirtualThread(() -> {
+        new Thread(() -> {
             // wait for some time for the widget to show, so that its dimensions are populated
             do {
+                System.out.println("Waiting for the info to show.");
                 Planner.sleepFor(Duration.ofMillis(500));
             } while (!isShowing());
             // get primary screen
@@ -64,7 +65,7 @@ public class InfoWidget extends Stage {
                     screenBounds.getMaxX() - widgetWidth - horizontalPadding,
                     screenBounds.getMinY() + verticalPadding
             );
-        });
+        }).start();
         updateInProcessTasksThread();
     }
 
