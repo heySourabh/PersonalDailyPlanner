@@ -48,6 +48,7 @@ public class InfoWidget extends Stage {
         super.setAlwaysOnTop(true);
         super.initStyle(StageStyle.TRANSPARENT);
         super.getIcons().add(Icon.graphic("info_widget_icon_64.png", 64).getImage());
+        super.show();
 
         // position to the top-right corner of the primary screen
         new Thread(() -> {
