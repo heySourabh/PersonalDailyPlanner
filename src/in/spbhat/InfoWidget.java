@@ -26,6 +26,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static in.spbhat.Planner.sleepFor;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
+
 public class InfoWidget extends Stage {
     private final Stage primaryStage;
     private List<String> inProcessTasks = new ArrayList<>();
@@ -46,6 +50,13 @@ public class InfoWidget extends Stage {
         super.setResizable(false);
         super.setTitle("Pomodoro Info Widget");
         super.setAlwaysOnTop(true);
+        Thread.startVirtualThread(() -> {
+            do {
+                sleepFor(Duration.of(5, MINUTES));
+                Platform.runLater(super::toFront);
+            } while (super.isShowing());
+        });
+
         super.initStyle(StageStyle.TRANSPARENT);
         super.getIcons().add(Icon.graphic("info_widget_icon_64.png", 64).getImage());
         super.show();
@@ -55,7 +66,7 @@ public class InfoWidget extends Stage {
             // wait for some time for the widget to show, so that its dimensions are populated
             do {
                 System.out.println("Waiting for the info to show.");
-                Planner.sleepFor(Duration.ofMillis(500));
+                sleepFor(Duration.ofMillis(500));
             } while (!isShowing());
             // get primary screen
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -133,7 +144,7 @@ public class InfoWidget extends Stage {
             while (this.isShowing() && primaryStage.isShowing()) {
                 updateTaskView();
                 Platform.runLater(this::sizeToScene);
-                Planner.sleepFor(Duration.ofSeconds(5));
+                sleepFor(Duration.ofSeconds(5));
             }
             Platform.runLater(this::close);
         });
