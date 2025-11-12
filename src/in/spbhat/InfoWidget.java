@@ -28,7 +28,6 @@ import java.util.List;
 
 import static in.spbhat.Planner.sleepFor;
 import static java.time.temporal.ChronoUnit.MINUTES;
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class InfoWidget extends Stage {
     private final Stage primaryStage;
