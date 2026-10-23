@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024.
+ * Copyright (c) 2023-2026.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static in.spbhat.Planner.sleepFor;
@@ -32,9 +33,9 @@ import static in.spbhat.Planner.sleepFor;
 public class PomodoroSection extends Section {
 
     public enum PomodoroState {
-        WORKING(Duration.ofMinutes(25), Color.GREENYELLOW, "Working"),
-        SHORT_BREAK(Duration.ofMinutes(5), Color.DEEPSKYBLUE, "Short Break"),
-        LONG_BREAK(Duration.ofMinutes(10), Color.DEEPPINK, "Long Break");
+        WORKING(Duration.ofMinutes(50), Color.GREENYELLOW, "Working"),
+        SHORT_BREAK(Duration.ofMinutes(10), Color.DEEPSKYBLUE, "Short Break"),
+        LONG_BREAK(Duration.ofMinutes(20), Color.DEEPPINK, "Long Break");
 
         private Duration duration;
         private final Color color;
@@ -52,6 +53,7 @@ public class PomodoroSection extends Section {
         }
     }
 
+    private static boolean autoProceed = true;
     private static int longBreakInterval = 4;
     private static final SimpleDoubleProperty soundLevel = new SimpleDoubleProperty(5);
     public static boolean pomodoroRunning = false;
@@ -65,12 +67,14 @@ public class PomodoroSection extends Section {
         super("Pomodoro | Not Started Yet: 00:00:00", createContent(), false);
         titleTextLabel = super.titleText;
         startRunningPomodoroThread();
+        notificationPlayer.setOnEndOfMedia(notificationPlayer::stop);
     }
 
     private static Button startStopBtn;
     private static Button fastForwardBtn;
     private static HBox indicatorsContent;
     private static int millisPerSecond; // for early finish of pomodoro
+    private static int secondStep;
 
     private static Pane createContent() {
         Indicator last = new Indicator(PomodoroState.LONG_BREAK);
@@ -86,13 +90,16 @@ public class PomodoroSection extends Section {
         fastForwardBtn.setGraphic(Icon.graphic("fast-forward.png", 20));
         fastForwardBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         fastForwardBtn.setTooltip(new Tooltip("Finish Early"));
-        fastForwardBtn.setOnAction(e -> millisPerSecond = 2);
+        fastForwardBtn.setOnAction(_ -> {
+            millisPerSecond = 2;
+            secondStep *= 4;
+        });
 
         startStopBtn = new Button("Start");
         stopPomodoro();
         startStopBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         startStopBtn.setTooltip(new Tooltip("Start / Stop Pomodoro"));
-        startStopBtn.setOnAction(e -> {
+        startStopBtn.setOnAction(_ -> {
             if (pomodoroRunning) {
                 stopPomodoro();
             } else {
@@ -101,7 +108,7 @@ public class PomodoroSection extends Section {
         });
 
         Button pomodoroSettings = new Button("Settings", Icon.graphic("sliders.png", 20));
-        pomodoroSettings.setOnAction(e -> showPomodoroSettings());
+        pomodoroSettings.setOnAction(_ -> showPomodoroSettings());
         pomodoroSettings.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         pomodoroSettings.setTooltip(new Tooltip("Pomodoro Settings"));
         HBox controlsContent = new HBox(startStopBtn, fastForwardBtn, pomodoroSettings);
@@ -155,7 +162,8 @@ public class PomodoroSection extends Section {
 
                     Indicator indicator = addPomodoroIndicator(pomodoroState);
                     millisPerSecond = 1000;
-                    for (int seconds = 0; seconds < pomodoroState.duration.toSeconds(); seconds++) {
+                    secondStep = 1;
+                    for (int seconds = 0; seconds < pomodoroState.duration.toSeconds(); seconds += secondStep) {
                         do {
                             indicator.setActive(pomodoroRunning);
                             sleepFor(Duration.ofMillis(millisPerSecond));
@@ -163,10 +171,10 @@ public class PomodoroSection extends Section {
 
                         if (seconds == 0) { // Show message about the Pomodoro state
                             pomodoroRunning = false;
-                            stopBackgroundSound();
                             Platform.runLater(() -> {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Time for '%s'".formatted(pomodoroState));
+                                String alertTitle = "Time for '%s'".formatted(pomodoroState);
+                                alert.setTitle(alertTitle);
                                 String activeTaskList;
                                 if (pomodoroState == PomodoroState.WORKING) {
                                     activeTaskList = PrioritiesSection.prioritiesTaskList.stream()
@@ -178,9 +186,29 @@ public class PomodoroSection extends Section {
                                 } else activeTaskList = "";
                                 alert.setHeaderText("Begin: " + pomodoroState + activeTaskList);
                                 alert.setContentText("Duration: " + format(pomodoroState.duration));
-                                alert.showAndWait();
-                                startBackgroundSound(pomodoroState);
-                                pomodoroRunning = true;
+
+                                // Wait for some time to allow the user to close the dialog.
+                                // If the user does not close the dialog within timeout close it and move to next pomodoro state
+                                AtomicBoolean dialogClosed = new AtomicBoolean(false);
+                                int autoCloseAfterSeconds = 20;
+                                Thread.startVirtualThread(() -> {
+                                    if (!autoProceed) return;
+                                    for (int i = 0; i < autoCloseAfterSeconds; i++) {
+                                        int remainingSeconds = autoCloseAfterSeconds - i;
+                                        Platform.runLater(() -> alert.setTitle(alertTitle + " (Closing in " + remainingSeconds + " secs)"));
+                                        sleepFor(Duration.ofSeconds(1));
+                                    }
+                                    if (!dialogClosed.get() && alert.isShowing()) {
+                                        Platform.runLater(alert::close);
+                                    }
+                                });
+                                alert.setOnHidden(_ -> {
+                                    dialogClosed.set(true);
+                                    startBackgroundSound(pomodoroState);
+                                    pomodoroRunning = true;
+                                });
+                                stopBackgroundSound();
+                                alert.show();
                             });
                         }
 
@@ -188,7 +216,7 @@ public class PomodoroSection extends Section {
                         Platform.runLater(() -> super.titleText.setText("Pomodoro | %s: %s".formatted(pomodoroState, format(remainingSeconds))));
                     }
                     indicator.setActive(false);
-                    notificationPlayer.stop();
+//                    notificationPlayer.stop();
                     notificationPlayer.play();
                 }
             }
@@ -205,23 +233,30 @@ public class PomodoroSection extends Section {
     private static void showPomodoroSettings() {
         TextField workingDurationField = new TextField(String.valueOf(PomodoroState.WORKING.duration.toMinutes()));
         workingDurationField.setPrefColumnCount(3);
-        HBox workingBox = new HBox(new Label("Working:                "), workingDurationField, new Label("Minutes"));
+        HBox workingBox = new HBox(new Label("Working:               "), workingDurationField, new Label("Minutes"));
         workingBox.setSpacing(5);
+        workingBox.setAlignment(Pos.BASELINE_LEFT);
 
         TextField shortBreakDurationField = new TextField(String.valueOf(PomodoroState.SHORT_BREAK.duration.toMinutes()));
         shortBreakDurationField.setPrefColumnCount(3);
         HBox shortBreakBox = new HBox(new Label("Short Break:          "), shortBreakDurationField, new Label("Minutes"));
         shortBreakBox.setSpacing(5);
+        shortBreakBox.setAlignment(Pos.BASELINE_LEFT);
 
         TextField longBreakDurationField = new TextField(String.valueOf(PomodoroState.LONG_BREAK.duration.toMinutes()));
         longBreakDurationField.setPrefColumnCount(3);
         HBox longBreakBox = new HBox(new Label("Long Break:           "), longBreakDurationField, new Label("Minutes"));
         longBreakBox.setSpacing(5);
+        longBreakBox.setAlignment(Pos.BASELINE_LEFT);
 
         TextField longBreakIntervalField = new TextField(String.valueOf(longBreakInterval));
         longBreakIntervalField.setPrefColumnCount(3);
         HBox longBreakIntervalBox = new HBox(new Label("Long Break After:  "), longBreakIntervalField, new Label("Pomodoros"));
         longBreakIntervalBox.setSpacing(5);
+        longBreakIntervalBox.setAlignment(Pos.BASELINE_LEFT);
+
+        CheckBox autoProceedCheckbox = new CheckBox("Automatically proceed to next step?");
+        autoProceedCheckbox.setSelected(autoProceed);
 
         Slider soundLevelSlider = new Slider(0, 100, soundLevel.get());
         soundLevelSlider.setBlockIncrement(5);
@@ -230,7 +265,7 @@ public class PomodoroSection extends Section {
         HBox volumeBox = new HBox(new Label("Sound Level: "), soundLevelSlider);
         volumeBox.setSpacing(20);
 
-        VBox contentBox = new VBox(workingBox, shortBreakBox, longBreakBox, longBreakIntervalBox, volumeBox);
+        VBox contentBox = new VBox(workingBox, shortBreakBox, longBreakBox, longBreakIntervalBox, autoProceedCheckbox, volumeBox);
         contentBox.setSpacing(16);
         contentBox.setPadding(new Insets(10, 100, 10, 100));
 
@@ -253,6 +288,8 @@ public class PomodoroSection extends Section {
 
                 int longBreakMinutes = Integer.parseInt(longBreakDurationField.getText());
                 PomodoroState.LONG_BREAK.duration = Duration.ofMinutes(longBreakMinutes);
+
+                autoProceed = autoProceedCheckbox.isSelected();
 
                 longBreakInterval = Integer.parseInt(longBreakIntervalField.getText());
                 soundLevel.set(soundLevelSlider.getValue());
@@ -316,7 +353,7 @@ public class PomodoroSection extends Section {
             setEffect(effect);
             Tooltip tooltip = new Tooltip(state.toString());
             setOnMouseEntered(e -> tooltip.show(this, e.getScreenX() + 20, e.getScreenY() + 16));
-            setOnMouseExited(e -> tooltip.hide());
+            setOnMouseExited(_ -> tooltip.hide());
             timer = new AnimationTimer() {
                 double time = 0.0;
                 long prev = -1;

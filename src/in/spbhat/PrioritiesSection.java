@@ -57,7 +57,7 @@ public class PrioritiesSection extends Section {
         Button addBtn = new Button("Add", Icon.graphic("add.png", 20));
         addBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addBtn.setTooltip(new Tooltip("Add New Task"));
-        addBtn.setOnAction(event ->
+        addBtn.setOnAction(_ ->
                 addEditableTask("", EditableTaskStatus.INCOMPLETE,
                         defaultExpectedDurationMinutes, defaultActualDurationMinutes,
                         "")
@@ -137,10 +137,7 @@ public class PrioritiesSection extends Section {
         String logMessage = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                 + " : Completed '" + task.taskField.getText() + "'"
                 + " in "
-                + "%02dh:%02dm:%02ds".formatted(
-                taskDuration.toHoursPart(),
-                taskDuration.toMinutesPart(),
-                taskDuration.toSecondsPart())
+                + taskDurationToString(taskDuration)
                 + (task.notes.isBlank() ? "" : "\n  Notes:\n" + task.notes.indent(4));
         System.out.println("Logging:\n  " + logMessage);
         File taskCompletionLogFile = new File("plans", Planner.todayDateString + ".log");
@@ -149,6 +146,13 @@ public class PrioritiesSection extends Section {
             logWriter.println(logMessage);
         } catch (Exception ignore) {
         }
+    }
+
+    public static String taskDurationToString(Duration taskDuration) {
+        return "%02dh:%02dm:%02ds".formatted(
+                taskDuration.toHoursPart(),
+                taskDuration.toMinutesPart(),
+                taskDuration.toSecondsPart());
     }
 
     public static EditableTask addEditableTask(String description, EditableTaskStatus status,

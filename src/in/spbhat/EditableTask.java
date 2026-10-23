@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.
+ * Copyright (c) 2020-2026.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -190,7 +190,7 @@ public class EditableTask extends HBox {
         // Show confirmation dialog before removing the task
         Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
         dialog.setContentText("Are you sure you want to delete the task?\n" +
-                              "\"" + taskField.getText() + "\"");
+                "\"" + taskField.getText() + "\"");
         dialog.setHeaderText("Confirm Delete?");
         dialog.showAndWait().ifPresent(buttonType -> {
             if (buttonType.equals(ButtonType.OK)) {
@@ -214,22 +214,14 @@ public class EditableTask extends HBox {
         prioritySpinner.getEditor().setPrefColumnCount(6);
         prioritySpinner.getEditor().setAlignment(Pos.CENTER);
 
-        HBox expectedDurationBox = new HBox(new Label("Expected:  "), expectedDurationField, new Label(" Minutes"));
-        expectedDurationBox.setSpacing(5);
-        HBox actualDurationBox = new HBox(new Label("Actual:       "), actualDurationField, new Label(" Minutes"));
-        actualDurationBox.setSpacing(5);
-        HBox priorityBox = new HBox(new Label("Priority:       "), prioritySpinner);
-
-        VBox durationsBox = new VBox(expectedDurationBox, actualDurationBox, priorityBox);
-        durationsBox.setSpacing(10);
-        durationsBox.setPadding(new Insets(20));
+        VBox durationsInputFields = getDurationsContent(expectedDurationField, actualDurationField, prioritySpinner);
 
         DialogPane dialogPane = new DialogPane();
         Node graphic = Icon.graphic("sliders.png", 64);
         dialogPane.setPrefWidth(400);
         dialogPane.setGraphic(graphic);
         dialogPane.setHeaderText("Task: " + taskField.getText());
-        dialogPane.setContent(durationsBox);
+        dialogPane.setContent(durationsInputFields);
         dialogPane.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Edit Durations");
@@ -253,6 +245,19 @@ public class EditableTask extends HBox {
                 }
             }
         });
+    }
+
+    private static VBox getDurationsContent(TextField expectedDurationField, TextField actualDurationField, Spinner<Integer> prioritySpinner) {
+        HBox expectedDurationBox = new HBox(new Label("Expected:  "), expectedDurationField, new Label(" Minutes"));
+        expectedDurationBox.setSpacing(5);
+        HBox actualDurationBox = new HBox(new Label("Actual:       "), actualDurationField, new Label(" Minutes"));
+        actualDurationBox.setSpacing(5);
+        HBox priorityBox = new HBox(new Label("Priority:       "), prioritySpinner);
+
+        VBox durationsBox = new VBox(expectedDurationBox, actualDurationBox, priorityBox);
+        durationsBox.setSpacing(10);
+        durationsBox.setPadding(new Insets(20));
+        return durationsBox;
     }
 
     class ClockFace extends Pane {

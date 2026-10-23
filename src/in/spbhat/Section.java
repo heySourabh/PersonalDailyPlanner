@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -32,15 +33,18 @@ public class Section extends VBox {
             .getResource("fonts/Tillana-Regular.ttf").toString(), 16);
 
     Label titleText;
+    private final Pane content;
     boolean sectionCollapsed = false;
 
     public Section(String title, Pane content, boolean collapsable) {
         titleText = new Label(title);
+        this.content = content;
         titleText.setFont(sectionTitleFont);
         HBox titleBox = new HBox(titleText);
         titleBox.setSpacing(10);
         if (collapsable) {
-            insertCollapsableButton(titleBox, content);
+            insertCollapsableButton(titleBox);
+            titleBox.addEventHandler(MouseEvent.MOUSE_CLICKED, _ -> toggleCollapse());
         }
 
         getChildren().addAll(titleBox, content);
@@ -52,27 +56,38 @@ public class Section extends VBox {
         VBox.setVgrow(content, Priority.ALWAYS);
     }
 
-    private void insertCollapsableButton(HBox titleBox, Pane content) {
+    Button collapseBtn;
+
+    private void insertCollapsableButton(HBox titleBox) {
         int btnSize = 20;
-        Button collapseBtn = new Button("", Icon.graphic("collapsable.png", btnSize));
+        collapseBtn = new Button("", Icon.graphic("collapsable.png", btnSize));
         collapseBtn.setShape(new Circle(btnSize * 0.5));
         collapseBtn.setMinSize(btnSize * 1.3, btnSize * 1.3);
         collapseBtn.setMaxSize(btnSize * 1.3, btnSize * 1.3);
         collapseBtn.setTooltip(new Tooltip("Hide / Show Section"));
         collapseBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         titleBox.getChildren().addFirst(collapseBtn);
-        collapseBtn.setOnAction(e -> {
-            sectionCollapsed = !sectionCollapsed;
-            if (sectionCollapsed) {
-                Transition transition = playCollapseTransition(content, collapseBtn);
-                transition.setOnFinished(event -> getChildren().remove(content));
-            } else {
-                if (getChildren().getLast() != content) {
-                    getChildren().add(content);
-                    playExpandTransition(content, collapseBtn);
-                }
+        collapseBtn.setOnAction(_ -> toggleCollapse());
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        if (sectionCollapsed == collapsed) return;
+        toggleCollapse();
+    }
+
+    private void toggleCollapse() {
+        sectionCollapsed = !sectionCollapsed;
+        if (collapseBtn == null) return;
+
+        if (sectionCollapsed) {
+            Transition transition = playCollapseTransition(content, collapseBtn);
+            transition.setOnFinished(_ -> getChildren().remove(content));
+        } else {
+            if (getChildren().getLast() != content) {
+                getChildren().add(content);
+                playExpandTransition(content, collapseBtn);
             }
-        });
+        }
     }
 
     private static void playExpandTransition(Pane content, Button collapseBtn) {

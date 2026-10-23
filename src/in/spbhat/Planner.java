@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024.
+ * Copyright (c) 2021-2026.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  */
 
@@ -22,10 +22,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
@@ -43,7 +40,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.locks.LockSupport;
+import java.util.stream.Collectors;
 
+import static in.spbhat.PrioritiesSection.taskDurationToString;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -65,7 +64,7 @@ public class Planner extends Application {
     @Override
     public void start(Stage stage) {
         primaryStage = stage;
-        Scene scene = new Scene(createContent(), 900, 1000);
+        Scene scene = new Scene(createContent(), 900, 500);
         stage.setScene(scene);
         stage.getIcons().addAll(
                 new Image(Objects.requireNonNull(Planner.class
@@ -129,18 +128,28 @@ public class Planner extends Application {
         root.setTop(topPane);
 
         pomodoroSection = new PomodoroSection();
-        projectsSection = new ProjectSection();
-        peopleSection = new PeopleSection();
         prioritiesSection = new PrioritiesSection();
+
+        projectsSection = new ProjectSection();
+        projectsSection.setCollapsed(true);
+
+        peopleSection = new PeopleSection();
+        peopleSection.setCollapsed(true);
+
         sections = new VBox(
                 new Separator(), pomodoroSection,
+                new Separator(), prioritiesSection,
                 new Separator(), projectsSection,
-                new Separator(), peopleSection,
-                new Separator(), prioritiesSection);
+                new Separator(), peopleSection
+        );
 
         sections.setAlignment(Pos.TOP_CENTER);
         sections.setPadding(new Insets(0, 10, 10, 10));
-        root.setCenter(sections);
+        ScrollPane scrollPane = new ScrollPane(sections);
+        scrollPane.setStyle("-fx-background-color: -fx-background;");
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        root.setCenter(scrollPane);
 
         saveMenuItem.setOnAction(event -> save(sections, event));
         loadPlanIfAvailable();
@@ -171,9 +180,9 @@ public class Planner extends Application {
                         <li> Every task can have additional notes for planning,
                              which is also saved in the log file after task completion.
                     </ul>
-                    
+                
                     If you find any bugs, or have suggestions, please do not hesitate to report the same.
-                    
+                
                     <br>
                     Programmed by: <strong>Sourabh Bhat</strong><br>
                     Provide feedback at: <a style="text-decoration:none" href="#">heySourabh@gmail.com</a><br>
@@ -194,13 +203,29 @@ public class Planner extends Application {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Log of completed tasks");
         alert.setHeaderText("Today's tasks saved after completion");
-        String logText = "Log file not found. Probably no task is completed so far.";
+        String logText = "";
         try {
             logText = Files.readString(new File("plans", Planner.todayDateString + ".log").toPath());
         } catch (IOException ignore) {
         }
-        alert.getDialogPane().setPrefWidth(800);
-        alert.setContentText(logText);
+        // Add on any recently completed tasks
+        logText += PrioritiesSection.prioritiesTaskList.stream()
+                .filter(node -> node instanceof EditableTask task && task.taskCompleted.isSelected())
+                .map(task -> (EditableTask) task)
+                .map(task -> "Just completed: '" + task.taskField.getText() + "' in " + taskDurationToString(task.actualDuration.get()))
+                .collect(Collectors.joining("\n"));
+
+        if (logText.isBlank()) {
+            logText = "Log file not found. Probably no task is completed so far.";
+        }
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setPrefWidth(800);
+        TextArea content = new TextArea(logText);
+        content.setEditable(false);
+        content.setBackground(Background.EMPTY);
+        content.setBorder(Border.EMPTY);
+        dialogPane.setContent(content);
         alert.setResizable(true);
         alert.showAndWait();
     }

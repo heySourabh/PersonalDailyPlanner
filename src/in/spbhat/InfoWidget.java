@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024.
+ * Copyright (c) 2024-2026.
  * @author Sourabh P. Bhat ( https://spbhat.in/ )
  * Created on 16 Mar, 2024
  */
@@ -51,7 +51,7 @@ public class InfoWidget extends Stage {
         super.setAlwaysOnTop(true);
         Thread.startVirtualThread(() -> {
             do {
-                sleepFor(Duration.of(5, MINUTES));
+                sleepFor(Duration.of(15, MINUTES));
                 Platform.runLater(super::toFront);
             } while (super.isShowing());
         });
@@ -179,8 +179,8 @@ public class InfoWidget extends Stage {
         if (str.length() <= numChars) {
             return str;
         } else {
-            String append = "...";
-            return str.substring(0, numChars - append.length()) + append;
+            String dots = "...";
+            return str.substring(0, numChars / 2) + dots + str.substring(str.length() + dots.length() - numChars / 2);
         }
     }
 }
